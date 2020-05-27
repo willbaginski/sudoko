@@ -6,4 +6,5 @@
 
 typedef struct sudoku {
     int puzzle[9][9];
+    counters_t* num_count;
 } sudoku_t;
