@@ -1,4 +1,4 @@
-# DESIGN.md for Suduko Final Prohect
+# DESIGN.md for Suduko Final Project
 ## Group Antony 1, CS 50, May 2020
 
 ## User interface ##
@@ -57,3 +57,6 @@ An array of 81 integers will be used to keep track of the values of squares in a
 Index 0 refers to the top-left square, and squares are counted left to right, top to bottom from there
 
 ## Testing plan  ##
+**create:**
+
+**solve:**
