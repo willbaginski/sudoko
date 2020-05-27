@@ -16,13 +16,3 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-bool check_full(suduko_t *suduko){
-    for(int row = 0; row < 9; row++){
-        for(int col = 0; col < 9; col++){
-            if(sudoko->puzzle[row][col] == 0){
-                return false;
-            }
-        }
-    }
-    return true;
-}
