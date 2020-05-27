@@ -21,9 +21,13 @@ output: 9x9 completed suduko grid
 ### Common Functions
 
 `sudoku_load`- Load a puzzle, in this case, from stdin
+
 `sudoku_build` - Build a new, random sudoku 
+
 `sudoku_solve` - Solve a sudoku that was loaded from `sudoku_load`
+
 `sudoku_print` - Print out the current Sudoku Puzzle
+
 `sudoku_delete`- Free anything in the heap
 
 
