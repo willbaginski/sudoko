@@ -51,7 +51,28 @@ bool sudoku_build(sudoku_t *sudoku) {
 }
 
 bool sudoku_solve(sudoku_t *sudoku) {
+    for(int row = 0; row < 9; row++){
+        for(int col = 0; col < 9; col++){
+			//check if sudoko space is empty
+			if(suduko->puzzle[row][col] == 0){
+				//find value not in row, col or square
+				//place val
+				//check full
+			}
+		}
+	}
+}
 
+/* helper for sudoko_solve */
+bool check_full(suduko_t *suduko){
+    for(int row = 0; row < 9; row++){
+        for(int col = 0; col < 9; col++){
+            if(sudoko->puzzle[row][col] == 0){
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool sudoku_print(sudoku_t *sudoku) {
