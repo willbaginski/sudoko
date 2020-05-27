@@ -43,7 +43,7 @@ We anticipate the following modules or functions:
 
 **solve:** 
 validates the grid recieved from stdin
-runs backtracking solving algoritm
+runs backtracking solving algorithm
 returns completed grid
 
 
