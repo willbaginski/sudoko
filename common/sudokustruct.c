@@ -9,10 +9,15 @@
 
 #include "sudoku.h"
 
-
+/* sudoku data structure */
 typedef struct sudoku {
     int puzzle[9][9];
 } sudoku_t;
+
+/* sudoku_validate helper functions */
+bool check_row(sudoku_t *sudoku, int row);
+bool check_col(sudoku_t *sudoku, int col);
+bool check_square(sudoku_t *sudoku, int row, int col);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -93,6 +98,150 @@ bool sudoku_print(sudoku_t *sudoku) {
 bool sudoku_delete(sudoku_t *sudoku) {
 	if(sudoku != NULL) {
 		free(sudoku);
+	}
+}
+
+/*	sudoku_validate method	*/
+// checks that there are no collisions for the row, column, and square around the current point
+bool sudoku_validate(sudoku_t *sudoku, int row, int column){
+
+	// check sudoku exists
+	if (sudoku == NULL){
+
+		// throw error and return false
+		fprintf(stderr, "error: must pass valid sudoku board\n");
+		return false;
+	}
+
+	// call check_row, col, and square
+	if (!check_row(sudoku, row) || !check_col(sudoko, col) || !check_square(sudoku, row, col)){
+		
+		// return false if any of them failed
+		return false;
+	}
+
+	// return true
+	return true;
+}
+
+/*	check_row helper method	*/
+bool check_row(sudoko_t *sudoko, int row){
+	
+	// create array for checking row
+	int rowcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	// loop through the row and check that each integer only occurs once (except for 0)
+	for (int colnum = 0; colnum < 9; colnum++){
+
+		// get the int at this spot
+		int num = sudoku->puzzle[row][colnum];
+
+		// don't check if the num is 0
+		if (num != 0){
+
+			// check the count in the rowcount array
+			if (rowcount[num - 1] != 0){
+
+				// return false if we've already seen this num
+				return false;
+			}
+			
+			// otherwise, increment the count
+			rowcount[num - 1] += 1;
+		}
+	}
+
+	// return true if no errors occured
+	return true;
+}
+
+/*	check_col helper method	*/
+bool check_col(sudoko_t *sudoko, int col){
+	
+	// create array for checking col
+	int colcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	// loop through the row and check that each integer only occurs once (except for 0)
+	for (int rownum = 0; rownum < 9; rownum++){
+
+		// get the int at this spot
+		int num = sudoku->puzzle[rownum][col];
+
+		// don't check if the num is 0
+		if (num != 0){
+
+			// check the count in the colcount array
+			if (colcount[num - 1] != 0){
+
+				// return false if we've seen this num
+				return false;
+			}
+			
+			// otherwise, increment the count
+			colcount[num - 1] += 1;
+		}
+	}
+
+	// return true if no errors occured
+	return true;
+}
+
+/*	check_square helper method	*/
+bool check_square(sudoku_t *sudoku, int row, int col){
+
+	// variables for the row and column bottom left corner
+	int rowcorner;
+	int colcorner;
+
+	// array for checking ints in the square
+	int sqarecount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	// get the row number for the bottom left corner of the square
+	if (row < 3){
+		rowcorner = 0;
+	}
+	else if (row < 6){
+		rowcorner = 3;
+	}
+	else{
+		rowcorner = 6;
+	}
+
+	// get the column number for the square's bottom left corner
+	if (col < 3){
+		colcorner = 0;
+	}
+	else if (col < 6){
+		colcorner = 3;
+	}
+	else{
+		colcorner = 6;
+	}
+
+	// loop through the square
+	for (int x = rowcorner; x < rowcorner + 3; x++){
+		for (int y = colcorner; y < colcorner + 3; y++){
+
+			// get the number at the current slot
+			int num = sudoku->puzzle[x][y];
+
+			// don't check if the num is 0
+			if (num != 0){
+
+				// check the count in the colcount array
+				if (squarecount[num - 1] != 0){
+
+					// return false
+					return false;
+				}
+			
+				// otherwise, increment the count
+				squarecount[num - 1] += 1;
+			}
+		}
+
+		// return true if no collisions found
+		return true;
 	}
 }
 
