@@ -17,6 +17,17 @@ typedef struct sudoku {
     int puzzle[9][9];
 } sudoku_t;
 
+sudoku_t* new_sudoku(){
+	int grid[9][9]; 
+	sudoku_t *game = calloc(1, sizeof(grid));
+	if(game == NULL){
+		fprintf(stderr, "Error: cannot allocate space for sudoku. \n");
+		return NULL;
+	}
+	return game;
+}
+
+
 /* sudoku_validate helper functions */
 bool check_row(sudoku_t *sudoku, int row);
 bool check_col(sudoku_t *sudoku, int col);
@@ -28,33 +39,23 @@ bool check_empty(sudoku_t *sudoku);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
-	int n1,n2,n3,n4,n5,n6,n7,n8,n9;
-	int row = 0;
-	while((fscanf(stdin, "%d %d %d %d %d %d %d %d %d ", &n1, &n2, &n3, &n4, &n5, &n6, &n7, &n8, &n9)) == 9){
-		for(int col = 0; col < 9; col ++){
-			//create variable name
-			char name[2];
-			strcpy(name, "n");
-			char num[2];
-			sprintf(num, "%d", col+1); 
-			strcat(name, num);
 
-			printf("the number is %s\n", name);	//this is for debugging
-
-			//confirm validity
-			if(*num < 0 || *num > 9){
+	for(int row = 0; row < 9; row++){
+        for(int col = 0; col < 9; col++){
+			int num = malloc(sizeof(int));
+			fscanf(stdin, " %d", &num);
+			//check validity
+			if(num < 0 || num > 9){
 				fprintf(stderr, "Error: invalid sudoko entry.\n");
 				return false;
 			}
 			//add to data structure
-			sudoku->puzzle[row][col] = *num;
+			sudoku->puzzle[row][col] = num;
+			
+			free(num);
 		}
 	}
-	if(row == 8){
-		return true;
-	}
-	fprintf(stderr, "Error: invalid sudoko grid.\n");
-	return false;
+	return true;
 }
 
 /* takes an empty sudoku and populates it randomly
@@ -116,11 +117,11 @@ bool sudoku_solve(sudoku_t *sudoku) {
 					}
 
 					//recursive call
-					if(sudoku_solve(suduko)){
+					if(sudoku_solve(sudoku)){
 						return true;
 					}
 				}
-				sudoku->puzzle[row][col] == 0 //means couldn't find a number to place
+				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
 	
 			}
 		}
@@ -326,6 +327,13 @@ int main() {
 	//future test code here
 
 	printf("Test\n");
+	sudoku_t* puzzle = new_sudoku();
+	sudoku_load(puzzle);
+	sudoku_print(puzzle);
+
+	// sudoku_solve(puzzle);
+	// sudoku_print(puzzle);
+
 	return 0;
 }
 
