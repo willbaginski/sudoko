@@ -10,9 +10,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../common/sudokostruct.h"
 
 int main(int argc, char *argv[]) {
+    printf("Sudoku.c main\n");
     return 0;
 }
 

@@ -25,6 +25,7 @@ test: $(PROG)
 	./$(PROG)
 
 clean:
+	rm -f common.a
 	rm -f core
 	rm -f *~ *.o
 	rm -f $(PROG)
