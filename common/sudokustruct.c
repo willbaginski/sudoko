@@ -29,13 +29,15 @@ sudoku_t* new_sudoku(){
 
 
 /* sudoku_validate helper functions */
-bool check_row(sudoku_t *sudoku, int row);
-bool check_col(sudoku_t *sudoku, int col);
-bool check_square(sudoku_t *sudoku, int row, int col);
+int *check_row(sudoku_t *sudoku, int row);
+int *check_col(sudoku_t *sudoku, int col);
+int *check_square(sudoku_t *sudoku, int row, int col);
+int *find_options(int array[]);
 
 /* other helper functions */
 bool check_full(sudoku_t *sudoku);
 bool check_empty(sudoku_t *sudoku);
+int *get_options(sudoku_t *sudoku, int row, int col);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -187,7 +189,7 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	}
 
 	// call check_row, col, and square
-	if (!check_row(sudoku, row) || !check_col(sudoku, column) || !check_square(sudoku, row, column)){
+	if (check_row(sudoku, row) == NULL || check_col(sudoku, column) == NULL || check_square(sudoku, row, column) == NULL){
 		
 		// return false if any of them failed
 		return false;
@@ -197,8 +199,43 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	return true;
 }
 
+/* get_options method */
+// returns which ints (if any) can go into a given spot
+int *get_options(sudoku_t *sudoku, int row, int col){
+
+	// check that the board is not null
+	if (sudoku == NULL){
+
+		// throw an error and return NULL
+		fprintf(stderr, "error: must pass valid sudoku board\n");
+		return NULL;
+	}
+
+	// call check row, col, and square
+	int rowoptions[] = check_row(sudoku, row);
+	int coloptions[] = check_col(sudoku, col);
+	int squareoptions[] = check_square(sudoku, row, col);
+
+	// initialize an array for options
+	int options[9] = { 0 };
+
+	// loop through indices, check if each element is found in all options arrays
+	for (int i = 0; i < 10; i++){
+
+		if (rowoptions[i] == 1 && coloptions[i] == 1 && squareoptions[i] == 1){
+
+			// add this element to the overarching options array
+			options[i] = 1;
+		}
+	}
+
+	// NOTE: THE INDICES IN THE OPTIONS ARRAY CORRESPOND TO AVAILABLE NUMBERS
+	// BUT ARE OFFSET BY 1 (SO INDEX 0 CORRESPONDS TO 1, ETC)
+	return options;
+}
+
 /*	check_row helper method	*/
-bool check_row(sudoku_t *sudoko, int row){
+int *check_row(sudoku_t *sudoko, int row){
 	
 	// create array for checking row
 	int rowcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -215,8 +252,8 @@ bool check_row(sudoku_t *sudoko, int row){
 			// check the count in the rowcount array
 			if (rowcount[num - 1] != 0){
 
-				// return false if we've already seen this num
-				return false;
+				// return NULL if we've already seen this num
+				return NULL;
 			}
 			
 			// otherwise, increment the count
@@ -224,12 +261,15 @@ bool check_row(sudoku_t *sudoko, int row){
 		}
 	}
 
-	// return true if no errors occured
-	return true;
+	// get the options for what int can go in this slot
+	int options[] = find_options(rowcount);
+
+	// return the options array if no collisions found
+	return options;
 }
 
 /*	check_col helper method	*/
-bool check_col(sudoku_t *sudoko, int col){
+int *check_col(sudoku_t *sudoko, int col){
 	
 	// create array for checking col
 	int colcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -246,21 +286,24 @@ bool check_col(sudoku_t *sudoko, int col){
 			// check the count in the colcount array
 			if (colcount[num - 1] != 0){
 
-				// return false if we've seen this num
-				return false;
+				// return NULL if we've seen this num
+				return NULL;
 			}
 			
 			// otherwise, increment the count
 			colcount[num - 1] += 1;
 		}
 	}
+	
+	// get the options for what int can go in this slot
+	int options[] = find_options(colcount);
 
-	// return true if no errors occured
-	return true;
+	// return the options array if no collisions found
+	return options;
 }
 
 /*	check_square helper method	*/
-bool check_square(sudoku_t *sudoku, int row, int col){
+int *check_square(sudoku_t *sudoku, int row, int col){
 
 	// variables for the row and column bottom left corner
 	int rowcorner;
@@ -304,8 +347,8 @@ bool check_square(sudoku_t *sudoku, int row, int col){
 				// check the count in the colcount array
 				if (squarecount[num - 1] != 0){
 
-					// return false
-					return false;
+					// return NULL
+					return NULL;
 				}
 			
 				// otherwise, increment the count
@@ -314,9 +357,31 @@ bool check_square(sudoku_t *sudoku, int row, int col){
 		}
 	}
 
+	// get the options for what int can go in this slot
+	int options[] = find_options(squarecount);
 
-	// return true if no collisions found
-	return true;
+	// return the options array if no collisions found
+	return options;
+}
+
+/*	find_options helper method */
+// find the numbers that can go in a particular spot, given the count array
+int *find_options(int array[]){
+
+	// initialize an array with all zeros
+	int options[9] = { 0 };
+
+	// loop through the passed array (skip over index 0)
+	for (int i = 1; i < 10; i++){
+
+		// if any of the indices store 0, add this index to the options array
+		if (array[i] == 0){
+
+			options[i - 1] = 1;
+		}
+	}
+
+	return options;
 }
 
 // Testing code. Run it through the mega gauntlet
