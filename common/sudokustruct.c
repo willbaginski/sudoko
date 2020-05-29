@@ -96,10 +96,10 @@ bool sudoku_build(sudoku_t *sudoku) {
 	}
 }
 
-bool sudoku_solve(sudoku_t *sudoku) {
+int sudoku_solve(sudoku_t *sudoku) {
 	//check to see if the grid needs solving
 	if(check_full(sudoku)){
-		return true; 
+		return 1; 
 	}
 
     for(int row = 0; row < 9; row++){
@@ -113,7 +113,7 @@ bool sudoku_solve(sudoku_t *sudoku) {
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
 						if(sudoku_solve(sudoku)){
-							return true;
+							//you have foud oe solution, try to go back and find more
 						}
 					}
 					sudoku_print(sudoku);
@@ -126,7 +126,7 @@ bool sudoku_solve(sudoku_t *sudoku) {
 			}
 		}
 	}
-	return false;	//default false, breakout if true
+	return 0;	//default false, breakout if true
 }
 
 /* helper for sudoko_solve */
