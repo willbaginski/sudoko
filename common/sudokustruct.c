@@ -295,10 +295,11 @@ bool check_square(sudoku_t *sudoku, int row, int col){
 				squarecount[num - 1] += 1;
 			}
 		}
-
-		// return true if no collisions found
-		return true;
 	}
+
+
+	// return true if no collisions found
+	return true;
 }
 
 // Testing code. Run it through the mega gauntlet
