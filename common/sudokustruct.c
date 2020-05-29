@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #include "sudokustruct.h"
 
@@ -20,6 +21,10 @@ typedef struct sudoku {
 bool check_row(sudoku_t *sudoku, int row);
 bool check_col(sudoku_t *sudoku, int col);
 bool check_square(sudoku_t *sudoku, int row, int col);
+
+/* other helper functions */
+bool check_full(sudoku_t *sudoku);
+bool check_empty(sudoku_t *sudoku);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -53,8 +58,44 @@ bool sudoku_load(sudoku_t *sudoku) {
 	return false;
 }
 
+/* takes an empty sudoku and populates it randomly
+ * will eventually be valid and support square removal
+ * but for now will randomly populate a grid */
 bool sudoku_build(sudoku_t *sudoku) {
-
+	// make sure sudoku is empty
+	if (! check_empty(sudoku)) {
+		return false;
+	}
+	// now that we know it is empty, populate the grid
+	// use the time as a seed for random number generation
+	srand(time(NULL));
+	
+	// num will be the number, 1-9, which is currently being inserted into the puzzle
+	for (int num = 1; num < 10; num++) {
+		// go through columns, randomly selecting a row num 0-8 to place num into
+		for (int col = 0; col < 8; col ++) {
+			int row = rand() % 9 + 1;
+			// "reroll" row index until the entry isn't conflicting
+			// this isn't very effecient -- instead we should keep track of collisions ... update later
+			while (! sudoku_validate(sudoku, row, col)) {
+				row = rand() % 9 + 1;
+			}
+			
+		}
+	}
+	// now that we have a full, valid grid, we can selectively remove from it
+	// for now, randomly remove a random number of squares in the range [25, 40]
+	for (int empty = rand() % 16 + 25; empty > 0; empty--) {
+		// choose a random filled position
+		int row = rand() % 9;
+		int col = rand() % 9;
+		while (sudoku->puzzle[row][col] == 0) {
+			row = rand() % 9;
+			col = rand() % 9;
+		}
+		// replace its value with 0
+		sudoku->puzzle[row][col] = 0;
+	}
 }
 
 bool sudoku_solve(sudoku_t *sudoku) {
@@ -71,15 +112,28 @@ bool sudoku_solve(sudoku_t *sudoku) {
 }
 
 /* helper for sudoko_solve */
-bool check_full(sudoku_t *suduko){
+
+bool check_full(sudoku_t *sudoku){
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
-            if(suduko->puzzle[row][col] == 0){
+            if(sudoku->puzzle[row][col] == 0){
                 return false;
             }
         }
     }
     return true;
+}
+
+/* helper for sudoku_load */
+bool check_empty(sudoku_t *sudoku) {
+	for (int row = 0; row < 9; row++) {
+		for (int col = 0; col < 9; col++) {
+			if (sudoku->puzzle[row][col] != 0) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 bool sudoku_print(sudoku_t *sudoku) {
