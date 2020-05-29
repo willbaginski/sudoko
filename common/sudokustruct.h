@@ -13,7 +13,7 @@ bool sudoku_load(sudoku_t *sudoku);
 
 bool sudoku_build(sudoku_t *sudoku);
 
-bool sudoku_solve(sudoku_t *sudoku);
+int sudoku_solve(sudoku_t *sudoku);
 
 bool sudoku_print(sudoku_t *sudoku);
 
