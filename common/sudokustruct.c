@@ -42,7 +42,7 @@ bool sudoku_load(sudoku_t *sudoku) {
 
 	for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
-			int num = malloc(sizeof(int));
+			int num;
 			fscanf(stdin, " %d", &num);
 			//check validity
 			if(num < 0 || num > 9){
@@ -51,8 +51,6 @@ bool sudoku_load(sudoku_t *sudoku) {
 			}
 			//add to data structure
 			sudoku->puzzle[row][col] = num;
-			
-			free(num);
 		}
 	}
 	return true;
