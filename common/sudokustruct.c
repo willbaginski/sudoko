@@ -4,11 +4,13 @@
  * 
 */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
 
-#include "sudoku.h"
+#include "sudokustruct.h"
 
 /* sudoku data structure */
 typedef struct sudoku {
@@ -27,9 +29,9 @@ bool check_empty(sudoku_t *sudoku);
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
 	int n1,n2,n3,n4,n5,n6,n7,n8,n9;
-	char[] line;
+	char line[9];
 	int row = 0;
-	while((fscanf(stdin, "%d %d %d %d %d %d %d %d %d ", &n1, &n2, &n3, &n4, &n5, &n6, &n7, &n8, &, &n9)) == 9){
+	while((fscanf(stdin, "%d %d %d %d %d %d %d %d %d ", &n1, &n2, &n3, &n4, &n5, &n6, &n7, &n8, &n9)) == 9){
 		for(int col = 0; col < 9; col ++){
 			//create variable name
 			char name[2];
@@ -42,7 +44,7 @@ bool sudoku_load(sudoku_t *sudoku) {
 
 			//confirm validity
 			if(name < 0 || name > 9){
-				fprintf(stderr, "Error: invalid sudoko entry.\n")
+				fprintf(stderr, "Error: invalid sudoko entry.\n");
 				return false;
 			}
 			//add to data structure
@@ -52,7 +54,7 @@ bool sudoku_load(sudoku_t *sudoku) {
 	if(row == 8){
 		return true;
 	}
-	fprintf(stderr, "Error: invalid sudoko grid.\n")
+	fprintf(stderr, "Error: invalid sudoko grid.\n");
 	return false;
 }
 
@@ -100,7 +102,7 @@ bool sudoku_solve(sudoku_t *sudoku) {
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
 			//check if sudoko space is empty
-			if(suduko->puzzle[row][col] == 0){
+			if(sudoku->puzzle[row][col] == 0){
 				//find value not in row, col or square
 				//place val
 				//check full
@@ -110,6 +112,7 @@ bool sudoku_solve(sudoku_t *sudoku) {
 }
 
 /* helper for sudoko_solve */
+
 bool check_full(sudoku_t *sudoku){
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
@@ -142,7 +145,7 @@ bool sudoku_print(sudoku_t *sudoku) {
     // Print the the puzzle
 	for (int r = 0; r < 9; r++) {
 		for (int c = 0; c < 9; c++) {
-			fprintf(stdout, "%d "sudoku->puzzle[r][c]);
+			fprintf(stdout, "%d ", sudoku->puzzle[r][c]);
 		}
 		fprintf(stdout, "\n");
 	}
@@ -167,7 +170,7 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	}
 
 	// call check_row, col, and square
-	if (!check_row(sudoku, row) || !check_col(sudoko, col) || !check_square(sudoku, row, col)){
+	if (!check_row(sudoku, row) || !check_col(sudoku, column) || !check_square(sudoku, row, column)){
 		
 		// return false if any of them failed
 		return false;
@@ -178,7 +181,7 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 }
 
 /*	check_row helper method	*/
-bool check_row(sudoko_t *sudoko, int row){
+bool check_row(sudoku_t *sudoko, int row){
 	
 	// create array for checking row
 	int rowcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -187,7 +190,7 @@ bool check_row(sudoko_t *sudoko, int row){
 	for (int colnum = 0; colnum < 9; colnum++){
 
 		// get the int at this spot
-		int num = sudoku->puzzle[row][colnum];
+		int num = sudoko->puzzle[row][colnum];
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -209,7 +212,7 @@ bool check_row(sudoko_t *sudoko, int row){
 }
 
 /*	check_col helper method	*/
-bool check_col(sudoko_t *sudoko, int col){
+bool check_col(sudoku_t *sudoko, int col){
 	
 	// create array for checking col
 	int colcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -218,7 +221,7 @@ bool check_col(sudoko_t *sudoko, int col){
 	for (int rownum = 0; rownum < 9; rownum++){
 
 		// get the int at this spot
-		int num = sudoku->puzzle[rownum][col];
+		int num = sudoko->puzzle[rownum][col];
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -247,7 +250,7 @@ bool check_square(sudoku_t *sudoku, int row, int col){
 	int colcorner;
 
 	// array for checking ints in the square
-	int sqarecount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int squarecount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	// get the row number for the bottom left corner of the square
 	if (row < 3){
@@ -301,6 +304,12 @@ bool check_square(sudoku_t *sudoku, int row, int col){
 // Testing code. Run it through the mega gauntlet
 #ifdef GAUNTLET
 
+int main() {
 
+	//future test code here
+
+	printf("Test\n");
+	return 0;
+}
 
 #endif
