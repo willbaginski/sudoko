@@ -109,17 +109,19 @@ bool sudoku_solve(sudoku_t *sudoku) {
 				//find value not in row, col or square
 				for(int val = 0; val < 9; val++){
 					//try placing a value
-					sudoku->puzzle[row][col] = val;
-					if(sudoku_validate(sudoku, row, col) == false){	//invalid place
-						sudoku->puzzle[row][col] = 0;
+					sudoku->puzzle[row][col] = val+1;
+					if(sudoku_validate(sudoku, row, col) == true){	//valid place
+						//recursive call
+						if(sudoku_solve(sudoku)){
+							return true;
+						}
 					}
-
-					//recursive call
-					if(sudoku_solve(sudoku)){
-						return true;
-					}
+					sudoku_print(sudoku);
+					printf("--------\n");
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
+
+				//copy board here to check for unique solutions
 	
 			}
 		}
@@ -329,8 +331,8 @@ int main() {
 	sudoku_load(puzzle);
 	sudoku_print(puzzle);
 
-	// sudoku_solve(puzzle);
-	// sudoku_print(puzzle);
+	sudoku_solve(puzzle);
+	sudoku_print(puzzle);
 
 	return 0;
 }
