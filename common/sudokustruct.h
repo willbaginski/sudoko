@@ -17,5 +17,6 @@ bool sudoku_solve(sudoku_t *sudoku);
 
 bool sudoku_print(sudoku_t *sudoku);
 
-bool sudoku_delete(sudoku_t *sudoku);
+bool sudoku_validate(sudoku_t *sudoku, int row, int column);
 
+bool sudoku_delete(sudoku_t *sudoku);
