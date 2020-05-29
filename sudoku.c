@@ -1,5 +1,5 @@
 /* 
- * sudoko.c - c file for CS50 sudoko module
+ * sudoku.c - c file for CS50 sudoku module
  * 
  * This file takes a command to create of solve and takes the appropriate action.
  * 

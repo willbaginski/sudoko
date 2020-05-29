@@ -29,26 +29,25 @@ bool check_empty(sudoku_t *sudoku);
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
 	int n1,n2,n3,n4,n5,n6,n7,n8,n9;
-	char line[9];
 	int row = 0;
 	while((fscanf(stdin, "%d %d %d %d %d %d %d %d %d ", &n1, &n2, &n3, &n4, &n5, &n6, &n7, &n8, &n9)) == 9){
 		for(int col = 0; col < 9; col ++){
 			//create variable name
 			char name[2];
 			strcpy(name, "n");
-			char num;
+			char num[2];
 			sprintf(num, "%d", col+1); 
 			strcat(name, num);
 
-			printf("the number is %d\n", name);
+			printf("the number is %s\n", name);	//this is for debugging
 
 			//confirm validity
-			if(name < 0 || name > 9){
+			if(*num < 0 || *num > 9){
 				fprintf(stderr, "Error: invalid sudoko entry.\n");
 				return false;
 			}
 			//add to data structure
-			sudoku->puzzle[row][col] = name;
+			sudoku->puzzle[row][col] = *num;
 		}
 	}
 	if(row == 8){
@@ -99,20 +98,37 @@ bool sudoku_build(sudoku_t *sudoku) {
 }
 
 bool sudoku_solve(sudoku_t *sudoku) {
+	//check to see if the grid needs solving
+	if(check_full(sudoku)){
+		return true; 
+	}
+
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//find value not in row, col or square
-				//place val
-				//check full
+				for(int val = 0; val < 9; val++){
+					//try placing a value
+					sudoku->puzzle[row][col] = val;
+					if(sudoku_validate(sudoku, row, col) == false){	//invalid place
+						sudoku->puzzle[row][col] = 0;
+					}
+
+					//recursive call
+					if(sudoku_solve(suduko)){
+						return true;
+					}
+				}
+				sudoku->puzzle[row][col] == 0 //means couldn't find a number to place
+	
 			}
 		}
 	}
+	return false;	//default false, breakout if true
 }
 
 /* helper for sudoko_solve */
-
 bool check_full(sudoku_t *sudoku){
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
