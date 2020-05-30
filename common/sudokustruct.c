@@ -41,11 +41,14 @@ int *get_options(sudoku_t *sudoku, int row, int col);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
-
+	// loop through all the numbers in the board
 	for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
 			int num;
-			fscanf(stdin, " %d", &num);
+			if(fscanf(stdin, " %d", &num) != 1){	//checks stdin has 81 numbers
+				fprintf(stderr, "Error: invalid sudoko board.\n");
+				return false;
+			}	
 			//check validity
 			if(num < 0 || num > 9){
 				fprintf(stderr, "Error: invalid sudoko entry.\n");
@@ -101,25 +104,28 @@ bool sudoku_build(sudoku_t *sudoku) {
 int sudoku_solve(sudoku_t *sudoku, int solution) {
 	//check to see if the grid needs solving
 	if(check_full(sudoku)){
-		return solution+1;
+		return solution+1;	//increment solution count because found a valid solution
 	}
 
+	//go through the entire board
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
-				//find value not in row, col or square
+				//loop through all possible values
 				for(int val = 0; val < 9; val++){
 					//try placing a value
 					sudoku->puzzle[row][col] = val+1;
-					if(sudoku_validate(sudoku, row, col) == true){	//valid place
-						//recursive call
-						if(sudoku_solve(sudoku)){
-							return solution+1;
-						}
-					}
 					sudoku_print(sudoku);
 					printf("--------\n");
+					if(sudoku_validate(sudoku, row, col) == true){	//valid place
+						//recursive call
+						if(sudoku_solve(sudoku, solution)){
+							return solution+1;
+							printf("found");
+						}
+					}
+					
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
 
@@ -128,7 +134,7 @@ int sudoku_solve(sudoku_t *sudoku, int solution) {
 			}
 		}
 	}
-	return solution;	
+	return solution;	//no new solution found, return current solution count	
 }
 
 /* helper for sudoko_solve */
