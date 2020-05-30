@@ -212,12 +212,12 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 	}
 
 	// call check row, col, and square
-	int rowoptions[] = check_row(sudoku, row);
-	int coloptions[] = check_col(sudoku, col);
-	int squareoptions[] = check_square(sudoku, row, col);
+	int *rowoptions = check_row(sudoku, row);
+	int *coloptions = check_col(sudoku, col);
+	int *squareoptions = check_square(sudoku, row, col);
 
 	// initialize an array for options
-	int options[9] = { 0 };
+	static int options[9] = { 0 };
 
 	// loop through indices, check if each element is found in all options arrays
 	for (int i = 0; i < 10; i++){
@@ -238,7 +238,7 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 int *check_row(sudoku_t *sudoko, int row){
 	
 	// create array for checking row
-	int rowcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static int rowcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int colnum = 0; colnum < 9; colnum++){
@@ -262,7 +262,7 @@ int *check_row(sudoku_t *sudoko, int row){
 	}
 
 	// get the options for what int can go in this slot
-	int options[] = find_options(rowcount);
+	int *options = find_options(rowcount);
 
 	// return the options array if no collisions found
 	return options;
@@ -272,7 +272,7 @@ int *check_row(sudoku_t *sudoko, int row){
 int *check_col(sudoku_t *sudoko, int col){
 	
 	// create array for checking col
-	int colcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static int colcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int rownum = 0; rownum < 9; rownum++){
@@ -296,7 +296,7 @@ int *check_col(sudoku_t *sudoko, int col){
 	}
 	
 	// get the options for what int can go in this slot
-	int options[] = find_options(colcount);
+	int *options = find_options(colcount);
 
 	// return the options array if no collisions found
 	return options;
@@ -310,7 +310,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 	int colcorner;
 
 	// array for checking ints in the square
-	int squarecount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static int squarecount[9] = { 0 };
 
 	// get the row number for the bottom left corner of the square
 	if (row < 3){
@@ -358,7 +358,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 	}
 
 	// get the options for what int can go in this slot
-	int options[] = find_options(squarecount);
+	int *options = find_options(squarecount);
 
 	// return the options array if no collisions found
 	return options;
@@ -369,7 +369,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 int *find_options(int array[]){
 
 	// initialize an array with all zeros
-	int options[9] = { 0 };
+	static int options[9] = { 0 };
 
 	// loop through the passed array (skip over index 0)
 	for (int i = 1; i < 10; i++){
