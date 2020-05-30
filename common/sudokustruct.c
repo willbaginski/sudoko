@@ -98,10 +98,10 @@ bool sudoku_build(sudoku_t *sudoku) {
 	}
 }
 
-int sudoku_solve(sudoku_t *sudoku) {
+int sudoku_solve(sudoku_t *sudoku, int solution) {
 	//check to see if the grid needs solving
 	if(check_full(sudoku)){
-		return 1; 
+		return solution+1;
 	}
 
     for(int row = 0; row < 9; row++){
@@ -115,7 +115,7 @@ int sudoku_solve(sudoku_t *sudoku) {
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
 						if(sudoku_solve(sudoku)){
-							//you have foud oe solution, try to go back and find more
+							return solution+1;
 						}
 					}
 					sudoku_print(sudoku);
@@ -128,7 +128,7 @@ int sudoku_solve(sudoku_t *sudoku) {
 			}
 		}
 	}
-	return 0;	//default false, breakout if true
+	return solution;	
 }
 
 /* helper for sudoko_solve */
@@ -396,7 +396,16 @@ int main() {
 	sudoku_load(puzzle);
 	sudoku_print(puzzle);
 
-	sudoku_solve(puzzle);
+	int res = sudoku_solve(puzzle, 0);
+	if(res == 0){
+		fprintf(stdout, "No solutions. \n");
+	}
+	else if (res == 1){
+		fprintf(stdout, "One solution. \n");
+	}
+	else{
+		fprintf(stdout, "Two or more solutions. \n");
+	}
 	sudoku_print(puzzle);
 
 	return 0;
