@@ -86,18 +86,10 @@ bool sudoku_build(sudoku_t *sudoku) {
 			
 		}
 	}
+
 	// now that we have a full, valid grid, we can selectively remove from it
-	// for now, randomly remove a random number of squares in the range [25, 40]
-	for (int empty = rand() % 16 + 25; empty > 0; empty--) {
-		// choose a random filled position
-		int row = rand() % 9;
-		int col = rand() % 9;
-		while (sudoku->puzzle[row][col] == 0) {
-			row = rand() % 9;
-			col = rand() % 9;
-		}
-		// replace its value with 0
-		sudoku->puzzle[row][col] = 0;
+	for (int empty = 10; empty > 0; empty--) {
+		
 	}
 }
 
