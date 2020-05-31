@@ -92,15 +92,22 @@ bool sudoku_build(sudoku_t *sudoku) {
 			// "reroll" row index until the entry isn't conflicting
 			// this isn't very effecient -- could keep track of collisions
 			while (! sudoku_validate(sudoku, row, col)) {
+				if (check_row(sudoku, row) == NULL) {
+					printf("conflict in row\n");
+				}
+				if (check_col(sudoku, col) == NULL) {
+					printf("conflict in col\n");
+				}
+				if (check_square(sudoku, row, col) == NULL) {
+					printf("conflict in box\n");
+				}
+				sudoku_print(sudoku);
+				printf("\n");
 				// reset the square that wasn't valid
 				sudoku->puzzle[row][col] = 0;
 				// retry with a different row
 				row = rand() % 9;
 				sudoku->puzzle[row][col] = num;
-				
-				printf("Puzzle:\n");
-				printf("Row: %d, Col: %d\n", row, col);
-				sudoku_print(sudoku);
 			}
 			
 		}
