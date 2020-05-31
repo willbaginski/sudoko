@@ -84,54 +84,80 @@ bool sudoku_build(sudoku_t *sudoku) {
 	for (int num = 1; num < 10; num++) {
 		// go through columns, randomly selecting a row num 0-8 to place num into
 		for (int col = 0; col < 8; col ++) {
-			int row = rand() % 9 + 1;
+			int row = rand() % 9;
+			// if the spot is not empty, retry
+			while (sudoku->puzzle[row][col] != 0) {
+				row = rand() % 9;
+			}
+			printf("found an empty spot:\n");
+			printf("row: %d, col: %d\n", row, col);
+			// set the index
+			sudoku->puzzle[row][col] = num;
+			sudoku_print(sudoku);
+			
 			// "reroll" row index until the entry isn't conflicting
 			// this isn't very effecient -- could keep track of collisions
 			while (! sudoku_validate(sudoku, row, col)) {
-				row = rand() % 9 + 1;
+				if (check_row(sudoku, row) == NULL) {
+					printf("conflict in row\n");
+				}
+				if (check_col(sudoku, col) == NULL) {
+					printf("conflict in col\n");
+				}
+				if (check_square(sudoku, row, col) == NULL) {
+					printf("conflict in box\n");
+				}
+				sudoku_print(sudoku);
+				printf("\n");
+				// reset the square that wasn't valid
+				sudoku->puzzle[row][col] = 0;
+				// retry with a different row
+				row = rand() % 9;
+				sudoku->puzzle[row][col] = num;
 			}
 			
 		}
 	}
 
 	// now that we have a full, valid grid, we can selectively remove from it
-	for (int empty = 40; empty > 0; empty--) {
-		sudoku_t *copy = new_sudoku();
-		// copy current puzzle into copy
-		copy_puzzle(copy, sudoku);
+	
+	// for (int empty = 40; empty > 0; empty--) {
+	// 	sudoku_t *copy = new_sudoku();
+	// 	// copy current puzzle into copy
+	// 	copy_puzzle(copy, sudoku);
 
-		/* perform removal operations on the copy and attempt to resolve
-		 * if the copy is found to have a unique solution, make the same removal on the original
-		 * otherwise, keep searching for a valid square to remove */
+	// 	/* perform removal operations on the copy and attempt to resolve
+	// 	 * if the copy is found to have a unique solution, make the same removal on the original
+	// 	 * otherwise, keep searching for a valid square to remove */
 
-		// randomly select a square that isn't empty and remove it
-		int row = rand() % 9;
-		int col = rand() % 9;
-		while (copy->puzzle[row][col] == 0) {
-			row = rand() % 9;
-			col = rand() % 9;
-		}
-		copy->puzzle[row][col] = 0;
+	// 	// randomly select a square that isn't empty and remove it
+	// 	int row = rand() % 9;
+	// 	int col = rand() % 9;
+	// 	while (copy->puzzle[row][col] == 0) {
+	// 		row = rand() % 9;
+	// 		col = rand() % 9;
+	// 	}
+	// 	copy->puzzle[row][col] = 0;
 
-		// if copy does not have a unique solution, try again
-		while (sudoku_solve(copy, 0) != 1) {
-			// restore original removed square from previous attempt
-			copy->puzzle[row][col] = sudoku->puzzle[row][col];  // original puzzle hasn't been altered, grab the value from there
+	// 	// if copy does not have a unique solution, try again
+	// 	while (sudoku_solve(copy, 0) != 1) {
+	// 		// restore original removed square from previous attempt
+	// 		copy->puzzle[row][col] = sudoku->puzzle[row][col];  // original puzzle hasn't been altered, grab the value from there
 
-			// empty a new square
-			int row = rand() % 9;
-			int col = rand() % 9;
-			while (copy->puzzle[row][col] == 0) {
-				row = rand() % 9;
-				col = rand() % 9;
-			}
-			copy->puzzle[row][col] = 0;
-		}
-		// make the change on the original puzzle and delete the copy to prepare for the next iteration
-		sudoku->puzzle[row][col] = 0;
-		sudoku_delete(copy);
-	}
-	#ifdef GAUNTLET
+	// 		// empty a new square
+	// 		int row = rand() % 9;
+	// 		int col = rand() % 9;
+	// 		while (copy->puzzle[row][col] == 0) {
+	// 			row = rand() % 9;
+	// 			col = rand() % 9;
+	// 		}
+	// 		copy->puzzle[row][col] = 0;
+	// 	}
+	// 	// make the change on the original puzzle and delete the copy to prepare for the next iteration
+	// 	sudoku->puzzle[row][col] = 0;
+	// 	sudoku_delete(copy);
+	// }
+  #ifdef GAUNTLET
 		printf("Successfully built sudoku\n");
 	#endif
 	return true;
