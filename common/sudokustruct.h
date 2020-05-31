@@ -9,6 +9,8 @@
 
 typedef struct sudoku sudoku_t;
 
+sudoku_t *sudoku_new();
+
 bool sudoku_load(sudoku_t *sudoku);
 
 bool sudoku_build(sudoku_t *sudoku);
