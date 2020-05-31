@@ -163,10 +163,10 @@ bool sudoku_build(sudoku_t *sudoku) {
 	return true;
 }
 
-int sudoku_solve(sudoku_t *sudoku, int solution) {
+bool sudoku_solve_forwards(sudoku_t *sudoku) {
 	//check to see if the grid needs solving
 	if(check_full(sudoku)){
-		return solution+1;	//increment solution count because found a valid solution
+		return true;	
 	}
 
 	//go through the entire board
@@ -175,28 +175,85 @@ int sudoku_solve(sudoku_t *sudoku, int solution) {
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//loop through all possible values
-				for(int val = 0; val < 9; val++){
+				for(int val = 1; val < 10; val++){
 					//try placing a value
-					sudoku->puzzle[row][col] = val+1;
-					sudoku_print(sudoku);
-					printf("--------\n");
+					sudoku->puzzle[row][col] = val;
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
-						if(sudoku_solve(sudoku, solution)){
-							return solution+1;
-							printf("found");
+						if(sudoku_solve_forwards(sudoku)){
+							return true;
 						}
 					}
-					
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
-
-				//copy board here to check for unique solutions
-	
 			}
 		}
 	}
-	return solution;	//no new solution found, return current solution count	
+	return false;
+}
+
+bool sudoku_solve_backwards(sudoku_t *sudoku) {
+	//check to see if the grid needs solving
+	if(check_full(sudoku)){
+		return true;	
+	}
+
+	//go through the entire board
+    for(int row = 0; row < 9; row++){
+        for(int col = 0; col < 9; col++){
+			//check if sudoko space is empty
+			if(sudoku->puzzle[row][col] == 0){
+				//loop through all possible values
+				for(int val = 9; val >= 0; val--){
+					//try placing a value
+					sudoku->puzzle[row][col] = val;
+					if(sudoku_validate(sudoku, row, col) == true){	//valid place
+						//recursive call
+						if(sudoku_solve_backwards(sudoku)){
+							return true;
+						}
+					}
+				}
+				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
+			}
+		}
+	}
+	return false;
+}
+
+/* solve overall */
+int sudoku_solve(sudoku_t* sudoku){
+	sudoku_t* one = new_sudoku();
+	sudoku_t* two = new_sudoku();
+
+	copy_puzzle(one, sudoku);	
+	copy_puzzle(two, sudoku);
+
+	//solve boht puzzle copies forward and backwards
+	if(!sudoku_solve_forwards(one) || !sudoku_solve_backwards(two)){	//unable to solve board
+		sudoku_delete(one);
+		sudoku_delete(two);
+		return 0;
+	}
+	
+	sudoku_print(one);
+	printf("-----\n");
+	sudoku_print(two);
+
+	//go through the entire board to compare outputs
+    for(int row = 0; row < 9; row++){
+        for(int col = 0; col < 9; col++){
+			if(one->puzzle[row][col] != two->puzzle[row][col]){	//means more than one board solution
+				sudoku_delete(one);
+				sudoku_delete(two);
+				return 2;
+			}
+		}
+	}
+	sudoku_delete(one);
+	sudoku_delete(two);
+	return 1;	//default one board solution
+	
 }
 
 /* helper for sudoko_solve */
@@ -479,9 +536,9 @@ int main() {
 	printf("Test\n");
 	sudoku_t* puzzle = new_sudoku();
 	sudoku_load(puzzle);
-	sudoku_print(puzzle);
 
-	int res = sudoku_solve(puzzle, 0);
+
+	int res = sudoku_solve(puzzle);
 	if(res == 0){
 		fprintf(stdout, "No solutions. \n");
 	}
@@ -491,8 +548,6 @@ int main() {
 	else{
 		fprintf(stdout, "Two or more solutions. \n");
 	}
-	sudoku_print(puzzle);
-
 	return 0;
 }
 
