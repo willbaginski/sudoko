@@ -443,7 +443,7 @@ int *find_options(int array[]){
 	static int options[9] = { 0 };
 
 	// loop through the passed array (skip over index 0)
-	for (int i = 1; i < 10; i++){
+	for (int i = 1; i < 9; i++){
 
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
