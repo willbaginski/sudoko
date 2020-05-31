@@ -291,7 +291,7 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 	static int options[9] = { 0 };
 
 	// loop through indices, check if each element is found in all options arrays
-	for (int i = 0; i < 10; i++){
+	for (int i = 0; i < 9; i++){
 
 		if (rowoptions[i] == 1 && coloptions[i] == 1 && squareoptions[i] == 1){
 
@@ -442,7 +442,7 @@ int *find_options(int array[]){
 	// initialize an array with all zeros
 	static int options[9] = { 0 };
 
-	// loop through the passed array (skip over index 0)
+	// loop through the passed array
 	for (int i = 1; i < 9; i++){
 
 		// if any of the indices store 0, add this index to the options array
