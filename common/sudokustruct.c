@@ -38,6 +38,7 @@ int *find_options(int array[]);
 bool check_full(sudoku_t *sudoku);
 bool check_empty(sudoku_t *sudoku);
 int *get_options(sudoku_t *sudoku, int row, int col);
+void copy_puzzle(sudoku_t *dest, sudoku_t *source);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -124,6 +125,7 @@ bool sudoku_build(sudoku_t *sudoku) {
 		sudoku->puzzle[row][col] = 0;
 		sudoku_delete(copy);
 	}
+	return true;
 }
 
 int sudoku_solve(sudoku_t *sudoku, int solution) {
@@ -199,12 +201,15 @@ bool sudoku_print(sudoku_t *sudoku) {
 		}
 		fprintf(stdout, "\n");
 	}
+	return true;
 }
 
 bool sudoku_delete(sudoku_t *sudoku) {
 	if(sudoku != NULL) {
 		free(sudoku);
+		return true;
 	}
+	return false;
 }
 
 /*	sudoku_validate method	*/
@@ -451,4 +456,14 @@ int main() {
 	return 0;
 }
 
+#endif
+
+#ifdef TESTCREATE
+int main() {
+	sudoku_t *sudoku = new_sudoku();
+	printf("Test random creation");
+	sudoku_build(sudoku);
+	sudoku_print(sudoku);
+	return 0;
+}
 #endif
