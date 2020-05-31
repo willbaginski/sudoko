@@ -9,7 +9,7 @@
 
 typedef struct sudoku sudoku_t;
 
-sudoku_t *sudoku_new();
+sudoku_t *new_sudoku();
 
 bool sudoku_load(sudoku_t *sudoku);
 
