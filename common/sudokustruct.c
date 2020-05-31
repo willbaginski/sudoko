@@ -24,6 +24,9 @@ sudoku_t* new_sudoku(){
 		fprintf(stderr, "Error: cannot allocate space for sudoku. \n");
 		return NULL;
 	}
+	#ifdef GAUNTLET
+		printf("Created new 9x9 sudoku\n");
+	#endif
 	return game;
 }
 
@@ -59,6 +62,9 @@ bool sudoku_load(sudoku_t *sudoku) {
 			sudoku->puzzle[row][col] = num;
 		}
 	}
+	#ifdef GAUNTLET
+		printf("Successfully loaded sudoku\n");
+	#endif
 	return true;
 }
 
@@ -125,6 +131,9 @@ bool sudoku_build(sudoku_t *sudoku) {
 		sudoku->puzzle[row][col] = 0;
 		sudoku_delete(copy);
 	}
+	#ifdef GAUNTLET
+		printf("Successfully built sudoku\n");
+	#endif
 	return true;
 }
 

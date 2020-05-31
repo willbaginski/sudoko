@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "common/sudokustruct.h"
+#include "sudokustruct.h"
 
 
 int main(int argc, char *argv[]) {
