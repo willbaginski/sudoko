@@ -309,13 +309,14 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 int *check_row(sudoku_t *sudoko, int row){
 	
 	// create array for checking row
-	static int rowcount[9] = { 0 };
+	int rowcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int colnum = 0; colnum < 9; colnum++){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[row][colnum];
+		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -343,13 +344,14 @@ int *check_row(sudoku_t *sudoko, int row){
 int *check_col(sudoku_t *sudoko, int col){
 	
 	// create array for checking col
-	static int colcount[9] = { 0 };
+	int colcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int rownum = 0; rownum < 9; rownum++){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[rownum][col];
+		printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -381,7 +383,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 	int colcorner;
 
 	// array for checking ints in the square
-	static int squarecount[9] = { 0 };
+	int squarecount[9] = { 0 };
 
 	// get the row number for the bottom left corner of the square
 	if (row < 3){
@@ -412,6 +414,8 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 			// get the number at the current slot
 			int num = sudoku->puzzle[x][y];
 
+			printf("checking row: %d col: %d, num is %d\n", x, y, num);
+
 			// don't check if the num is 0
 			if (num != 0){
 
@@ -440,7 +444,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 int *find_options(int array[]){
 
 	// initialize an array with all zeros
-	static int options[9] = { 0 };
+	int options[9] = { 0 };
 
 	// loop through the passed array
 	for (int i = 1; i < 9; i++){
@@ -452,7 +456,8 @@ int *find_options(int array[]){
 		}
 	}
 
-	return options;
+	int *point_options = options;
+	return point_options;
 }
 
 // copies the puzzle from source into the puzzle in dest
