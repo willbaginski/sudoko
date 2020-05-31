@@ -19,8 +19,10 @@ all:
 $(PROG): $(PROG).o $(LLIBS) 
 	$(CC) $(CFLAGS) $^ -o $@
 	
+# test: all $(PROG)
+# 	./$(PROG)
 test: all $(PROG)
-	./$(PROG)
+	bash -v ./testing.sh
 
 clean:
 	rm -f core

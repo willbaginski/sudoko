@@ -6,7 +6,7 @@ OBJS = sudokustruct.o
 LIB = common.a
 
 UNITTEST=-DGAUNTLET
-CREATETEST=-DCREATETEST
+CREATETEST=-DTESTCREATE
 
 CFLAGS = -Wall -pedantic -std=c11 -ggdb $(FLAGS)
 CC = gcc
@@ -18,7 +18,7 @@ $(LIB): $(OBJS)
 sudokustruct.o: sudokustruct.h
 
 $(PROG): sudokustruct.c
-	$(CC) $(CFLAGS) $(UNITTEST) $^ -o $@
+	$(CC) $(CFLAGS) $(CREATETEST) $^ -o $@
 
 .PHONY: test clean
 

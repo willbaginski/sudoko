@@ -24,6 +24,9 @@ sudoku_t* new_sudoku(){
 		fprintf(stderr, "Error: cannot allocate space for sudoku. \n");
 		return NULL;
 	}
+	#ifdef GAUNTLET
+		printf("Created new 9x9 sudoku\n");
+	#endif
 	return game;
 }
 
@@ -59,6 +62,9 @@ bool sudoku_load(sudoku_t *sudoku) {
 			sudoku->puzzle[row][col] = num;
 		}
 	}
+	#ifdef GAUNTLET
+		printf("Successfully loaded sudoku\n");
+	#endif
 	return true;
 }
 
@@ -114,6 +120,7 @@ bool sudoku_build(sudoku_t *sudoku) {
 	}
 
 	// now that we have a full, valid grid, we can selectively remove from it
+	
 	// for (int empty = 40; empty > 0; empty--) {
 	// 	sudoku_t *copy = new_sudoku();
 	// 	// copy current puzzle into copy
@@ -150,6 +157,9 @@ bool sudoku_build(sudoku_t *sudoku) {
 	// 	sudoku->puzzle[row][col] = 0;
 	// 	sudoku_delete(copy);
 	// }
+  #ifdef GAUNTLET
+		printf("Successfully built sudoku\n");
+	#endif
 	return true;
 }
 
