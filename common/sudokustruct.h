@@ -13,9 +13,10 @@ bool sudoku_load(sudoku_t *sudoku);
 
 bool sudoku_build(sudoku_t *sudoku);
 
-bool sudoku_solve(sudoku_t *sudoku);
+int sudoku_solve(sudoku_t *sudoku, int solution);
 
 bool sudoku_print(sudoku_t *sudoku);
 
-bool sudoku_delete(sudoku_t *sudoku);
+bool sudoku_validate(sudoku_t *sudoku, int row, int column);
 
+bool sudoku_delete(sudoku_t *sudoku);
