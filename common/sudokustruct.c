@@ -245,6 +245,9 @@ int sudoku_solve(sudoku_t* sudoku){
 	sudoku_print(two);
 	#endif
 
+	printf("The solution to the sudoku... \n");
+	sudoku_print(one);
+
 	//go through the entire board to compare outputs
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
@@ -378,7 +381,9 @@ int *check_row(sudoku_t *sudoko, int row){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[row][colnum];
+		#ifdef GAUNTLET
 		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+		#endif
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -413,7 +418,9 @@ int *check_col(sudoku_t *sudoko, int col){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[rownum][col];
-		printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
+		#ifdef GAUNTLET
+		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+		#endif
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -475,8 +482,9 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 
 			// get the number at the current slot
 			int num = sudoku->puzzle[x][y];
-
-			printf("checking row: %d col: %d, num is %d\n", x, y, num);
+			#ifdef GAUNTLET
+			printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+			#endif
 
 			// don't check if the num is 0
 			if (num != 0){

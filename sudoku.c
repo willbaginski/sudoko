@@ -14,14 +14,19 @@
 
 
 int main(int argc, char *argv[]) {
-    if(argc != 2){
+    if(argc > 3 || argc < 2){
         fprintf(stderr, "usage: ./sudoku gameOption [dificulty]\n");
         return 1;
     }
     if(strcmp(argv[1], "create") == 0){ //then enter create mode
+        //parse argv[2] here to get dificulty 
+
         sudoku_t* puzzle = new_sudoku();
         sudoku_build(puzzle);
         sudoku_print(puzzle);
+
+        //clean up data structures
+        sudoku_delete(puzzle);
     }
     else if(strcmp(argv[1], "solve") == 0){ //then enter solve mode
         sudoku_t* puzzle = new_sudoku();
@@ -36,12 +41,17 @@ int main(int argc, char *argv[]) {
         else{
             fprintf(stdout, "Two or more solutions. \n");
         }
+
+        //clean up data structures
+        sudoku_delete(puzzle);
     }
     else{
         fprintf(stderr, "Error: invalid gameOption. \n");
         return 2;
     }
 
+
+    
     return 0;
 }
 
