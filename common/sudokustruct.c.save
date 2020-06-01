@@ -36,7 +36,7 @@ int *check_row(sudoku_t *sudoku, int row);
 int *check_col(sudoku_t *sudoku, int col);
 int *check_square(sudoku_t *sudoku, int row, int col);
 int *find_options(int array[]);
-
+≈
 /* other helper functions */
 bool check_full(sudoku_t *sudoku);
 bool check_empty(sudoku_t *sudoku);
@@ -163,10 +163,10 @@ bool sudoku_build(sudoku_t *sudoku) {
 	return true;
 }
 
-bool sudoku_solve_forwards(sudoku_t *sudoku) {
+int sudoku_solve(sudoku_t *sudoku, int solution) {
 	//check to see if the grid needs solving
 	if(check_full(sudoku)){
-		return true;	
+		return solution+1;	//increment solution count because found a valid solution
 	}
 
 	//go through the entire board
@@ -175,90 +175,28 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//loop through all possible values
-				for(int val = 1; val < 10; val++){
+				for(int val = 0; val < 9; val++){
 					//try placing a value
-					sudoku->puzzle[row][col] = val;
+					sudoku->puzzle[row][col] = val+1;
+					sudoku_print(sudoku);
+					printf("--------\n");
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
-						if(sudoku_solve_forwards(sudoku)){
-							return true;
-						}
-					}
-				}
-				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
-				return false;
-			}
-		}
-	}
-	return false;
-}
-
-bool sudoku_solve_backwards(sudoku_t *sudoku) {
-	//check to see if the grid needs solving
-	if(check_full(sudoku)){
-		return true;	
-	}
-
-	//go through the entire board
-    for(int row = 0; row < 9; row++){
-        for(int col = 0; col < 9; col++){
-			//check if sudoko space is empty
-			if(sudoku->puzzle[row][col] == 0){
-				//loop through all possible values
-				for(int val = 9; val > 0; val--){
-					//try placing a values
-					sudoku->puzzle[row][col] = val;
-					if(sudoku_validate(sudoku, row, col) == true){	//valid place
-						//recursive call
-						if(sudoku_solve_backwards(sudoku)){
-							return true;
+						if(sudoku_solve(sudoku, solution)){
+							return solution+1;
+							printf("found");
 						}
 					}
 					
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
-				return false;
+
+				//copy board here to check for unique solutions
+	
 			}
 		}
 	}
-	return false;
-}
-
-/* solve overall */
-int sudoku_solve(sudoku_t* sudoku){
-	sudoku_t* one = new_sudoku();
-	sudoku_t* two = new_sudoku();
-
-	copy_puzzle(one, sudoku);	
-	copy_puzzle(two, sudoku);
-
-	//solve boht puzzle copies forward and backwards
-	if(!sudoku_solve_forwards(one) || !sudoku_solve_backwards(two)){	//unable to solve board
-		sudoku_delete(one);
-		sudoku_delete(two);
-		return 0;
-	}
-	
-	#ifdef GAUNTLET
-	sudoku_print(one);
-	printf("-----\n");
-	sudoku_print(two);
-	#endif
-
-	//go through the entire board to compare outputs
-    for(int row = 0; row < 9; row++){
-        for(int col = 0; col < 9; col++){
-			if(one->puzzle[row][col] != two->puzzle[row][col]){	//means more than one board solution
-				sudoku_delete(one);
-				sudoku_delete(two);
-				return 2;
-			}
-		}
-	}
-	sudoku_delete(one);
-	sudoku_delete(two);
-	return 1;	//default one board solution
-	
+	return solution;	//no new solution found, return current solution count	
 }
 
 /* helper for sudoko_solve */
@@ -371,14 +309,13 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 int *check_row(sudoku_t *sudoko, int row){
 	
 	// create array for checking row
-	int rowcount[9] = { 0 };
+	static int rowcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int colnum = 0; colnum < 9; colnum++){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[row][colnum];
-		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -406,14 +343,13 @@ int *check_row(sudoku_t *sudoko, int row){
 int *check_col(sudoku_t *sudoko, int col){
 	
 	// create array for checking col
-	int colcount[9] = { 0 };
+	static int colcount[9] = { 0 };
 
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int rownum = 0; rownum < 9; rownum++){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[rownum][col];
-		printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -445,7 +381,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 	int colcorner;
 
 	// array for checking ints in the square
-	int squarecount[9] = { 0 };
+	static int squarecount[9] = { 0 };
 
 	// get the row number for the bottom left corner of the square
 	if (row < 3){
@@ -476,8 +412,6 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 			// get the number at the current slot
 			int num = sudoku->puzzle[x][y];
 
-			printf("checking row: %d col: %d, num is %d\n", x, y, num);
-
 			// don't check if the num is 0
 			if (num != 0){
 
@@ -506,7 +440,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 int *find_options(int array[]){
 
 	// initialize an array with all zeros
-	int options[9] = { 0 };
+	static int options[9] = { 0 };
 
 	// loop through the passed array
 	for (int i = 1; i < 9; i++){
@@ -518,8 +452,7 @@ int *find_options(int array[]){
 		}
 	}
 
-	int *point_options = options;
-	return point_options;
+	return options;
 }
 
 // copies the puzzle from source into the puzzle in dest
@@ -538,12 +471,12 @@ int main() {
 
 	//future test code here
 
-	printf("Testting the sudoku_solve()....\n");
+	printf("Test\n");
 	sudoku_t* puzzle = new_sudoku();
 	sudoku_load(puzzle);
+	sudoku_print(puzzle);
 
-
-	int res = sudoku_solve(puzzle);
+	int res = sudoku_solve(puzzle, 0);
 	if(res == 0){
 		fprintf(stdout, "No solutions. \n");
 	}
@@ -553,6 +486,8 @@ int main() {
 	else{
 		fprintf(stdout, "Two or more solutions. \n");
 	}
+	sudoku_print(puzzle);
+
 	return 0;
 }
 
