@@ -15,7 +15,7 @@
 
 int main(int argc, char *argv[]) {
     if(argc != 2){
-        fprintf(stderr, "usage: ./sudoku gameOption\n");
+        fprintf(stderr, "usage: ./sudoku gameOption [dificulty]\n");
         return 1;
     }
     if(strcmp(argv[1], "create") == 0){ //then enter create mode
