@@ -177,6 +177,8 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 				//loop through all possible values
 				for(int val = 1; val < 10; val++){
 					//try placing a value
+					sudoku_print(sudoku);
+					printf("____________\n");
 					sudoku->puzzle[row][col] = val;
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
@@ -186,6 +188,7 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 					}
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
+				return false;
 			}
 		}
 	}
@@ -204,8 +207,10 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//loop through all possible values
-				for(int val = 9; val >= 0; val--){
-					//try placing a value
+				for(int val = 9; val > 0; val--){
+					//try placing a values
+					sudoku_print(sudoku);
+					printf("____________\n");
 					sudoku->puzzle[row][col] = val;
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
@@ -213,8 +218,10 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 							return true;
 						}
 					}
+					
 				}
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
+				return false;
 			}
 		}
 	}
@@ -537,6 +544,8 @@ int main() {
 	sudoku_t* puzzle = new_sudoku();
 	sudoku_load(puzzle);
 
+	// sudoku_solve_forwards(puzzle);
+	// sudoku_print(puzzle);
 
 	int res = sudoku_solve(puzzle);
 	if(res == 0){
