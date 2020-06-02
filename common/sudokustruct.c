@@ -175,10 +175,20 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 
 /* removes slots in the puzzle */
 bool remove_squares(sudoku_t *sudoku, int remove) {
+	// determine the number of slots left to empty
+	int empty=0;
+	for (int r=0; r<9; r++) {
+		for (int c=0; c<9; c++) {
+			if (sudoku->puzzle[r][c] == 0) {
+				empty++;
+			}
+		}
+	}
+	
 	// base cases
 	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
 		return false;
-	} else if (remove == 0) {  // if we get here, we're finished
+	} else if (empty == remove) {  // if we get here, we're finished
 		return true;
 	}
 
@@ -193,7 +203,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	sudoku->puzzle[row][col] = 0;
 
 	// recursive case
-	while (! remove_squares(sudoku, remove - 1)) {
+	while (! remove_squares(sudoku, remove)) {
 		// retry removing a new square
 		sudoku->puzzle[row][col] = value;  // restore old value
 		// grab a new nonzero square
