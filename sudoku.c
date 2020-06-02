@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
         //parse argv[2] here to get dificulty 
 
         sudoku_t* puzzle = new_sudoku();
-        sudoku_build(puzzle, 70); // arbitrary, left for now
+        sudoku_build(puzzle, 10); // arbitrary, left for now
         sudoku_print(puzzle);
 
         //clean up data structures

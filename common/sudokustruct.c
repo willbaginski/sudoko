@@ -83,7 +83,9 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 
 	// construct a solved/full grid
 	fill_puzzle(sudoku, 0, 0);
-
+	printf("Valid full grid:\n");
+	sudoku_print(sudoku);
+	printf("\nSame grid with %d empty spaces:\n", 81-clues);
 	// remove spaces
 	remove_squares(sudoku, 81 - clues);
 
@@ -97,8 +99,6 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 /* fills an empty sudoku puzzle randomly with a valid full grid
  * helper for sudoku_build */
 bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
-	printf("row: %d, col: %d, puzzle:\n", row, col);
-	sudoku_print(sudoku);
 	// if puzzle is full, return true (base case)
 	if (check_full(sudoku)) {
 		return true;
@@ -125,15 +125,12 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 	 * ex: if 2, 4, 7 were valid, resultant array is: { 2, 4, 7 }
 	 * j will end up equaling the last valid index into the array */
 	int j = 0;
-	printf("options:\n{");
 	for (int i = 0; i < 9; i++) {
 		if (options[i] == 1) {
 			formatted_options[j] = i + 1;
-			printf(" %d,", formatted_options[j]);
 			j++;
 		}
 	}
-	printf("}\n\n");
 	free(options);
 
 	// randomly select an int from formatted_options and insert it into the slot
@@ -165,6 +162,7 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 		// if num gets back to original_num, we've tried every option and none of them worked ... return false
 		if (num == original_num) {
 			// clean up
+			sudoku->puzzle[row][col] = 0;
 			free(formatted_options);
 			return false;
 		}
@@ -184,7 +182,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	// take a random nonzero square, save its value, and remove it
 	int row = rand() % 9;
 	int col = rand() % 9;
-	while (sudoku->puzzle[row][col] != 0) {
+	while (sudoku->puzzle[row][col] == 0) {
 		row = rand() % 9;
 		col = rand() % 9;
 	}
