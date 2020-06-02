@@ -85,7 +85,7 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 	fill_puzzle(sudoku, 0, 0);
 
 	// remove spaces
-	//remove_squares(sudoku, 81 - clues);
+	remove_squares(sudoku, 81 - clues);
 
 	
   #ifdef GAUNTLET
@@ -203,7 +203,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 			row = rand() % 9;
 			col = rand() % 9;
 		}
-		int value = sudoku->puzzle[row][col];
+		value = sudoku->puzzle[row][col];
 		sudoku->puzzle[row][col] = 0;
 	}
 
