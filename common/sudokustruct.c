@@ -108,14 +108,11 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 	int *options = get_options(sudoku, row, col);
 	// determine the number of valid options
 	int valid = 0;
-	printf("options: {"); // TEST 1/3
 	for (int i = 0; i < 9; i++) {
-		printf(" %d,", options[i]); // TEST 2/3
 		if (options[i] == 1) {
 			valid++;
 		}
 	}
-	printf("}\n"); // TEST 3/3
 	// if valid is 0, there are no valid options for this slot and we need to backtrack!
 	if (valid == 0) {
 		return false;
@@ -123,20 +120,21 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 
 	/* turn the array from get_options into a form which can be randomly iterated over more easily
 	 * allocate an int array that can hold one entry per valid option for the spot */
-	int *formatted_options = malloc(valid * sizeof(valid));
+	int *formatted_options = calloc(valid, sizeof(valid));
 	/* add each valid number into the array
 	 * ex: if 2, 4, 7 were valid, resultant array is: { 2, 4, 7 }
 	 * j will end up equaling the last valid index into the array */
 	int j = 0;
-	printf("formatted options: { "); // TEST 1/3
+	printf("options:\n{");
 	for (int i = 0; i < 9; i++) {
 		if (options[i] == 1) {
 			formatted_options[j] = i + 1;
-			printf(" %d,", i + 1);  // TEST 2/3
+			printf(" %d,", formatted_options[j]);
 			j++;
 		}
 	}
-	printf("}\n"); // TEST 3/3
+	printf("}\n");
+	free(options);
 
 	// randomly select an int from formatted_options and insert it into the slot
 	int original_num = rand() % j;
@@ -398,36 +396,40 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 	int *rowoptions = check_row(sudoku, row);
 	int *coloptions = check_col(sudoku, col);
 	int *squareoptions = check_square(sudoku, row, col);
-
+	
 	// initialize an array for options
-	static int options[9] = { 0 };
+	int *options = malloc(sizeof(int) * 9);
 
 	// loop through indices, check if each element is found in all options arrays
 	for (int i = 0; i < 9; i++){
-
+		printf("rowoptions[%d] = %d, coloptions[%d] = %d, squareoptions[%d] = %d\n", i, rowoptions[i], i, coloptions[i], i, squareoptions[i]);
 		if (rowoptions[i] == 1 && coloptions[i] == 1 && squareoptions[i] == 1){
-
+			
 			// add this element to the overarching options array
 			options[i] = 1;
+		} else {
+			options[i] = 0;
 		}
 	}
 
 	// NOTE: THE INDICES IN THE OPTIONS ARRAY CORRESPOND TO AVAILABLE NUMBERS
 	// BUT ARE OFFSET BY 1 (SO INDEX 0 CORRESPONDS TO 1, ETC)
+	free(rowoptions);
+	free(coloptions);
+	free(squareoptions);
 	return options;
 }
 
 /*	check_row helper method	*/
 int *check_row(sudoku_t *sudoko, int row){
-	
 	// create array for checking row
 	int rowcount[9] = { 0 };
-
 	// loop through the row and check that each integer only occurs once (except for 0)
 	for (int colnum = 0; colnum < 9; colnum++){
-
+	
 		// get the int at this spot
 		int num = sudoko->puzzle[row][colnum];
+		
 		//printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
 
 		// don't check if the num is 0
@@ -444,7 +446,11 @@ int *check_row(sudoku_t *sudoko, int row){
 			rowcount[num - 1] += 1;
 		}
 	}
-
+	printf("rowcount:\n{");
+	for (int j = 0; j < 9; j++) {
+		printf(" %d,", rowcount[j]);
+	}
+	printf("}\n\n");
 	// get the options for what int can go in this slot
 	int *options = find_options(rowcount);
 
@@ -546,7 +552,6 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 
 	// get the options for what int can go in this slot
 	int *options = find_options(squarecount);
-
 	// return the options array if no collisions found
 	return options;
 }
@@ -554,22 +559,21 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 /*	find_options helper method */
 // find the numbers that can go in a particular spot, given the count array
 int *find_options(int array[]){
-
 	// initialize an array with all zeros
-	int options[9] = { 0 };
+	int *options = malloc(sizeof(int) * 9);
 
 	// loop through the passed array
 	for (int i = 0; i < 9; i++){
-
+		printf("array[%d] = %d, ", i, array[i]);
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
-
 			options[i] = 1;
+		} else {
+			options[i] = 0;
 		}
 	}
-
-	int *point_options = options;
-	return point_options;
+	printf("left loop\n");
+	return options;
 }
 
 // copies the puzzle from source into the puzzle in dest
