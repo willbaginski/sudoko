@@ -517,7 +517,7 @@ int *find_options(int array[]){
 	int options[9] = { 0 };
 
 	// loop through the passed array
-	for (int i = 1; i < 9; i++){
+	for (int i = 0; i < 9; i++){
 
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
