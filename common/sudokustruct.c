@@ -43,6 +43,7 @@ bool check_empty(sudoku_t *sudoku);
 int *get_options(sudoku_t *sudoku, int row, int col);
 void copy_puzzle(sudoku_t *dest, sudoku_t *source);
 bool fill_puzzle(sudoku_t *sudoku, int row, int col);
+bool remove_squares(sudoku_t *sudoku, int remove);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -177,44 +178,36 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 }
 
 /* removes slots in the puzzle */
-void remove_squares(sudoku_t *sudoku, int remove) {
-	// now that we have a full, valid grid, we can selectively remove from it
-	for (int num = remove; num > 0; num--) {
-		sudoku_t *copy = new_sudoku();
-		// copy current puzzle into copy
-		copy_puzzle(copy, sudoku);
+bool remove_squares(sudoku_t *sudoku, int remove) {
+	if (remove == 0) {  // base case
+		return true;
+	}
 
-		/* perform removal operations on the copy and attempt to resolve
-		 * if the copy is found to have a unique solution, make the same removal on the original
-		 * otherwise, keep searching for a valid square to remove */
+	// take a random nonzero square, save its value, and remove it
+	int row = rand() % 9;
+	int col = rand() % 9;
+	while (sudoku->puzzle[row][col] != 0) {
+		row = rand() % 9;
+		col = rand() % 9;
+	}
+	int value = sudoku->puzzle[row][col];
+	sudoku->puzzle[row][col] = 0;
 
-		// randomly select a square that isn't empty and remove it
+	while (! remove_squares(sudoku, remove - 1)) {
+		// retry removing a new square
+		sudoku->puzzle[row][col] = value;  // restore old value
+		// grab a new nonzero square
 		int row = rand() % 9;
 		int col = rand() % 9;
-		while (copy->puzzle[row][col] == 0) {
+		while (sudoku->puzzle[row][col] != 0) {
 			row = rand() % 9;
 			col = rand() % 9;
 		}
-		copy->puzzle[row][col] = 0;
-
-		// if copy does not have a unique solution, try again
-		while (sudoku_solve(copy) != 1) {
-			// restore original removed square from previous attempt
-			copy->puzzle[row][col] = sudoku->puzzle[row][col];  // original puzzle hasn't been altered, grab the value from there
-
-			// empty a new square
-			int row = rand() % 9;
-			int col = rand() % 9;
-			while (copy->puzzle[row][col] == 0) {
-				row = rand() % 9;
-				col = rand() % 9;
-			}
-			copy->puzzle[row][col] = 0;
-		}
-		// make the change on the original puzzle and delete the copy to prepare for the next iteration
+		int value = sudoku->puzzle[row][col];
 		sudoku->puzzle[row][col] = 0;
-		sudoku_delete(copy);
 	}
+
+	return true;
 }
 
 bool sudoku_solve_forwards(sudoku_t *sudoku) {
