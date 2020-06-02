@@ -564,7 +564,7 @@ int *find_options(int array[]){
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
 
-			options[i - 1] = 1;
+			options[i] = 1;
 		}
 	}
 
