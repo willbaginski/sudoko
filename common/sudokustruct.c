@@ -419,7 +419,7 @@ int *check_col(sudoku_t *sudoko, int col){
 		// get the int at this spot
 		int num = sudoko->puzzle[rownum][col];
 		#ifdef GAUNTLET
-		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+		printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
 		#endif
 
 		// don't check if the num is 0
@@ -483,7 +483,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 			// get the number at the current slot
 			int num = sudoku->puzzle[x][y];
 			#ifdef GAUNTLET
-			printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+			printf("checking row: %d col: %d, num is %d\n", x, y, num);
 			#endif
 
 			// don't check if the num is 0
@@ -546,7 +546,7 @@ int main() {
 
 	//future test code here
 
-	printf("Testting the sudoku_solve()....\n");
+	printf("Testing the sudoku_solve()....\n");
 	sudoku_t* puzzle = new_sudoku();
 	sudoku_load(puzzle);
 
