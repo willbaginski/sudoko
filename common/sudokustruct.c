@@ -175,7 +175,10 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 
 /* removes slots in the puzzle */
 bool remove_squares(sudoku_t *sudoku, int remove) {
-	if (remove == 0) {  // base case
+	// base cases
+	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
+		return false;
+	} else if (remove == 0) {  // if we get here, we're finished
 		return true;
 	}
 
@@ -189,6 +192,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	int value = sudoku->puzzle[row][col];
 	sudoku->puzzle[row][col] = 0;
 
+	// recursive case
 	while (! remove_squares(sudoku, remove - 1)) {
 		// retry removing a new square
 		sudoku->puzzle[row][col] = value;  // restore old value
@@ -287,9 +291,6 @@ int sudoku_solve(sudoku_t* sudoku){
 	printf("-----\n");
 	sudoku_print(two);
 	#endif
-
-	printf("The solution to the sudoku... \n");
-	sudoku_print(one);
 
 	//go through the entire board to compare outputs
     for(int row = 0; row < 9; row++){
