@@ -44,6 +44,8 @@ No assumptions beyond those that are clear from the spec. The solver will even w
 
 To compile, simply `make`.
 
+To compile common archive as well, simply `make all`.
+
 To test, simply `make test`.
 See [TESTING](TESTING.md) for details of testing and an example test run.
 

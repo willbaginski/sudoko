@@ -299,6 +299,9 @@ int sudoku_solve(sudoku_t* sudoku){
 	sudoku_print(two);
 	#endif
 
+	printf("The solution to the sudoku... \n");
+	sudoku_print(one);
+
 	//go through the entire board to compare outputs
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
@@ -563,7 +566,7 @@ int *find_options(int array[]){
 	int options[9] = { 0 };
 
 	// loop through the passed array
-	for (int i = 1; i < 9; i++){
+	for (int i = 0; i < 9; i++){
 
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
@@ -592,7 +595,7 @@ int main() {
 
 	//future test code here
 
-	printf("Testting the sudoku_solve()....\n");
+	printf("Testing the sudoku_solve()....\n");
 	sudoku_t* puzzle = new_sudoku();
 	sudoku_load(puzzle);
 

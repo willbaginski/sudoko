@@ -11,13 +11,14 @@ MAKE = make
 
 LLIBS = $C/common.a 
 
+$(PROG): $(PROG).o $(LLIBS) 
+	$(CC) $(CFLAGS) $^ -o $@
+
 .PHONY: all clean
 
 all:
 	$(MAKE) -C common
 
-$(PROG): $(PROG).o $(LLIBS) 
-	$(CC) $(CFLAGS) $^ -o $@
 	
 # test: all $(PROG)
 # 	./$(PROG)
@@ -25,7 +26,7 @@ test: all $(PROG)
 	bash -v ./testing.sh
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all ./sudoku create easy
+	#valgrind --leak-check=full --show-leak-kinds=all ./sudoku create easy
 	valgrind --leak-check=full --show-leak-kinds=all ./sudoku solve < ./common/test1.txt
 
 clean:
