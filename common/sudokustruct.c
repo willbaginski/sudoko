@@ -177,17 +177,24 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 /* removes slots in the puzzle */
 bool remove_squares(sudoku_t *sudoku, int remove) {
 	// determine the number of slots left to empty
-	int empty = 0;
+	int removed = 0;
 	for (int row = 0; row < 9; row++) {
 		for (int col = 0; col < 9; col++) {
 			if (sudoku->puzzle[row][col] == 0) {
-				empty++;
+				removed++;
 			}
 		}
 	}
 	
+	// base cases
+	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
+		return false;
+	} else if (removed == remove) {  // if we get here, we're finished
+		return true;
+	}
+
 	// allocate an array with an entry for every filled square
-	intpair_t **options = calloc(81 - empty, sizeof(intpair_t *));
+	intpair_t **options = calloc(81 - removed, sizeof(intpair_t *));
 	// fill the array with an intpair containing the position of every nonzero/filled spot
 	int filled = 0;
 	for (int row = 0; row < 9; row++) {
@@ -199,13 +206,6 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 		}
 	}
 
-	// base cases
-	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
-		return false;
-	} else if (empty == remove) {  // if we get here, we're finished
-		return true;
-	}
-
 	// take a random spot from options, save its value, and remove it
 	int original_index = rand() % filled;
 	int index = original_index;
@@ -214,10 +214,11 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	int value = sudoku->puzzle[row][col];
 	sudoku->puzzle[row][col] = 0;
 
-	// recursive case
-	while (! remove_squares(sudoku, remove)) {
-		// retry removing a new square
-		sudoku->puzzle[row][col] = value;  // restore old value
+	// recursive case ... if what we inserted invalidates the puzzle, try different options until we have a unique solution again
+	while (sudoku_solve(sudoku) != 1 || ! remove_squares(sudoku, remove)) {
+		// restore the old value (removing it caused an issue!)
+		sudoku->puzzle[row][col] = value;
+
 		// grab the next nonzero square from options
 		if (index == filled - 1) {  // wrap back to the start of the array
 			index = 0;
@@ -225,7 +226,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 			index++;
 		}
 		
-		// check if we have tried every spot
+		// check if we have already tried and failed to find a unique solution for every spot (backtrack if we have)
 		if (index == original_index) {
 			for (int i = 0; i < filled; i++) {
 				intpair_delete(options[i]);
@@ -234,7 +235,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 			return false;
 		}
 
-		// take the next row and col
+		// if we still have spots to try, take the next row and col from options and try that spot
 		row = intpair_getRow(options[index]);
 		col = intpair_getCol(options[index]);
 		// save the value there
@@ -242,7 +243,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 		// empty the square/set the position to zero
 		sudoku->puzzle[row][col] = 0;
 	}
-	
+
 	// clean up and return true
 	for (int i = 0; i < filled; i++) {
 				intpair_delete(options[i]);
