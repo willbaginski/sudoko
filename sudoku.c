@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     }
     if(strcmp(argv[1], "create") == 0){ //then enter create mode
         sudoku_t* puzzle = new_sudoku();
-        sudoku_build(puzzle);
+        sudoku_build(puzzle, 70); // arbitrary, left for now
         sudoku_print(puzzle);
     }
     else if(strcmp(argv[1], "solve") == 0){ //then enter solve mode

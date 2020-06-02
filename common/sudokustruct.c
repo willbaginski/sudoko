@@ -42,6 +42,7 @@ bool check_full(sudoku_t *sudoku);
 bool check_empty(sudoku_t *sudoku);
 int *get_options(sudoku_t *sudoku, int row, int col);
 void copy_puzzle(sudoku_t *dest, sudoku_t *source);
+bool fill_puzzle(sudoku_t *sudoku, int row, int col);
 
 /* Takes in from stdin, loads into the suduko data structure */
 bool sudoku_load(sudoku_t *sudoku) {
@@ -69,98 +70,151 @@ bool sudoku_load(sudoku_t *sudoku) {
 }
 
 /* takes an empty sudoku and populates it randomly
- * will eventually be valid and support square removal
- * but for now will randomly populate a grid */
-bool sudoku_build(sudoku_t *sudoku) {
+ * clues is the number of filled squares at the end */
+bool sudoku_build(sudoku_t *sudoku, int clues) {
 	// make sure sudoku is empty
 	if (! check_empty(sudoku)) {
 		return false;
 	}
-	// now that we know it is empty, populate the grid
-	// use the time as a seed for random number generation
+
+	// seed the random number generator
 	srand(time(NULL));
+
+	// construct a solved/full grid
+	fill_puzzle(sudoku, 0, 0);
+
+	// remove spaces
+	//remove_squares(sudoku, 81 - clues);
+
 	
-	// num will be the number, 1-9, which is currently being inserted into the puzzle
-	for (int num = 1; num < 10; num++) {
-		// go through columns, randomly selecting a row num 0-8 to place num into
-		for (int col = 0; col < 8; col ++) {
-			int row = rand() % 9;
-			// if the spot is not empty, retry
-			while (sudoku->puzzle[row][col] != 0) {
-				row = rand() % 9;
-			}
-			printf("found an empty spot:\n");
-			printf("row: %d, col: %d\n", row, col);
-			// set the index
-			sudoku->puzzle[row][col] = num;
-			sudoku_print(sudoku);
-			
-			// "reroll" row index until the entry isn't conflicting
-			// this isn't very effecient -- could keep track of collisions
-			while (! sudoku_validate(sudoku, row, col)) {
-				if (check_row(sudoku, row) == NULL) {
-					printf("conflict in row\n");
-				}
-				if (check_col(sudoku, col) == NULL) {
-					printf("conflict in col\n");
-				}
-				if (check_square(sudoku, row, col) == NULL) {
-					printf("conflict in box\n");
-				}
-				sudoku_print(sudoku);
-				printf("\n");
-				// reset the square that wasn't valid
-				sudoku->puzzle[row][col] = 0;
-				// retry with a different row
-				row = rand() % 9;
-				sudoku->puzzle[row][col] = num;
-			}
-			
-		}
-	}
-
-	// now that we have a full, valid grid, we can selectively remove from it
-	
-	// for (int empty = 40; empty > 0; empty--) {
-	// 	sudoku_t *copy = new_sudoku();
-	// 	// copy current puzzle into copy
-	// 	copy_puzzle(copy, sudoku);
-
-	// 	/* perform removal operations on the copy and attempt to resolve
-	// 	 * if the copy is found to have a unique solution, make the same removal on the original
-	// 	 * otherwise, keep searching for a valid square to remove */
-
-	// 	// randomly select a square that isn't empty and remove it
-	// 	int row = rand() % 9;
-	// 	int col = rand() % 9;
-	// 	while (copy->puzzle[row][col] == 0) {
-	// 		row = rand() % 9;
-	// 		col = rand() % 9;
-	// 	}
-	// 	copy->puzzle[row][col] = 0;
-
-	// 	// if copy does not have a unique solution, try again
-	// 	while (sudoku_solve(copy, 0) != 1) {
-	// 		// restore original removed square from previous attempt
-	// 		copy->puzzle[row][col] = sudoku->puzzle[row][col];  // original puzzle hasn't been altered, grab the value from there
-
-	// 		// empty a new square
-	// 		int row = rand() % 9;
-	// 		int col = rand() % 9;
-	// 		while (copy->puzzle[row][col] == 0) {
-	// 			row = rand() % 9;
-	// 			col = rand() % 9;
-	// 		}
-	// 		copy->puzzle[row][col] = 0;
-	// 	}
-	// 	// make the change on the original puzzle and delete the copy to prepare for the next iteration
-	// 	sudoku->puzzle[row][col] = 0;
-	// 	sudoku_delete(copy);
-	// }
   #ifdef GAUNTLET
 		printf("Successfully built sudoku\n");
 	#endif
 	return true;
+}
+
+/* fills an empty sudoku puzzle randomly with a valid full grid
+ * helper for sudoku_build */
+bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
+	printf("row: %d, col: %d, puzzle:\n", row, col);
+	sudoku_print(sudoku);
+	// if puzzle is full, return true (base case)
+	if (check_full(sudoku)) {
+		return true;
+	}
+	
+	// find valid entries for the spot [row][col]
+	int *options = get_options(sudoku, row, col);
+	// determine the number of valid options
+	int valid = 0;
+	printf("options: {"); // TEST 1/3
+	for (int i = 0; i < 9; i++) {
+		printf(" %d,", options[i]); // TEST 2/3
+		if (options[i] == 1) {
+			valid++;
+		}
+	}
+	printf("}\n"); // TEST 3/3
+	// if valid is 0, there are no valid options for this slot and we need to backtrack!
+	if (valid == 0) {
+		return false;
+	}
+
+	/* turn the array from get_options into a form which can be randomly iterated over more easily
+	 * allocate an int array that can hold one entry per valid option for the spot */
+	int *formatted_options = malloc(valid * sizeof(valid));
+	/* add each valid number into the array
+	 * ex: if 2, 4, 7 were valid, resultant array is: { 2, 4, 7 }
+	 * j will end up equaling the last valid index into the array */
+	int j = 0;
+	printf("formatted options: { "); // TEST 1/3
+	for (int i = 0; i < 9; i++) {
+		if (options[i] == 1) {
+			formatted_options[j] = i + 1;
+			printf(" %d,", i + 1);  // TEST 2/3
+			j++;
+		}
+	}
+	printf("}\n"); // TEST 3/3
+
+	// randomly select an int from formatted_options and insert it into the slot
+	int original_num = rand() % j;
+	int num = original_num;
+	sudoku->puzzle[row][col] = formatted_options[num];
+	
+	/* grab the row and col to move to the next spot (moving left to right, then top to bottom)
+	 * (save them as new values instead of incrementing the current ones because the old values are
+	 * still needed in order to retry fill_puzzle with a different value in the current slot) */
+	int next_row, next_col;
+	if (col == 8) {
+		next_col = 0;
+		next_row = row + 1;
+	} else {
+		next_col = col + 1;
+		next_row = row;
+	}
+
+	while (! fill_puzzle(sudoku, next_row, next_col)) {
+		// move on to the next index in formatted_options (if we get to the end (j - 1), go back to the start)
+		if (num == j - 1) {
+			num = 0;
+		} else {
+			num++;
+		}
+		// replace the current value in the puzzle with the next one
+		sudoku->puzzle[row][col] = formatted_options[num];
+		// if num gets back to original_num, we've tried every option and none of them worked ... return false
+		if (num == original_num) {
+			// clean up
+			free(formatted_options);
+			return false;
+		}
+	}
+
+	// clean up
+	free(formatted_options);
+	return true;
+}
+
+/* removes slots in the puzzle */
+void remove_squares(sudoku_t *sudoku, int remove) {
+	// now that we have a full, valid grid, we can selectively remove from it
+	for (int num = remove; num > 0; num--) {
+		sudoku_t *copy = new_sudoku();
+		// copy current puzzle into copy
+		copy_puzzle(copy, sudoku);
+
+		/* perform removal operations on the copy and attempt to resolve
+		 * if the copy is found to have a unique solution, make the same removal on the original
+		 * otherwise, keep searching for a valid square to remove */
+
+		// randomly select a square that isn't empty and remove it
+		int row = rand() % 9;
+		int col = rand() % 9;
+		while (copy->puzzle[row][col] == 0) {
+			row = rand() % 9;
+			col = rand() % 9;
+		}
+		copy->puzzle[row][col] = 0;
+
+		// if copy does not have a unique solution, try again
+		while (sudoku_solve(copy) != 1) {
+			// restore original removed square from previous attempt
+			copy->puzzle[row][col] = sudoku->puzzle[row][col];  // original puzzle hasn't been altered, grab the value from there
+
+			// empty a new square
+			int row = rand() % 9;
+			int col = rand() % 9;
+			while (copy->puzzle[row][col] == 0) {
+				row = rand() % 9;
+				col = rand() % 9;
+			}
+			copy->puzzle[row][col] = 0;
+		}
+		// make the change on the original puzzle and delete the copy to prepare for the next iteration
+		sudoku->puzzle[row][col] = 0;
+		sudoku_delete(copy);
+	}
 }
 
 bool sudoku_solve_forwards(sudoku_t *sudoku) {
@@ -378,7 +432,7 @@ int *check_row(sudoku_t *sudoko, int row){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[row][colnum];
-		printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
+		//printf("checking row: %d col: %d, num is %d\n", row, colnum, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -413,7 +467,7 @@ int *check_col(sudoku_t *sudoko, int col){
 
 		// get the int at this spot
 		int num = sudoko->puzzle[rownum][col];
-		printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
+		//printf("checking row: %d col: %d, num is %d\n", rownum, col, num);
 
 		// don't check if the num is 0
 		if (num != 0){
@@ -476,7 +530,7 @@ int *check_square(sudoku_t *sudoku, int row, int col){
 			// get the number at the current slot
 			int num = sudoku->puzzle[x][y];
 
-			printf("checking row: %d col: %d, num is %d\n", x, y, num);
+			//printf("checking row: %d col: %d, num is %d\n", x, y, num);
 
 			// don't check if the num is 0
 			if (num != 0){
