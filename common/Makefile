@@ -2,7 +2,7 @@
 
 PROG = commontest
 
-OBJS = sudokustruct.o
+OBJS = sudokustruct.o intpair.o
 LIB = common.a
 
 UNITTEST=-DGAUNTLET
@@ -16,6 +16,8 @@ $(LIB): $(OBJS)
 	ar cr $(LIB) $(OBJS)
 
 sudokustruct.o: sudokustruct.h
+
+intpair.o: intpair.h
 
 $(PROG): sudokustruct.c
 	$(CC) $(CFLAGS) $(UNITTEST) $^ -o $@

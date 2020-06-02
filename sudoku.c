@@ -22,8 +22,11 @@ int main(int argc, char *argv[]) {
         //parse argv[2] here to get dificulty 
 
         sudoku_t* puzzle = new_sudoku();
-        sudoku_build(puzzle, 30); // arbitrary, left for now
-        sudoku_print(puzzle);
+        if (sudoku_build(puzzle, 25)) {
+            sudoku_print(puzzle);
+        } else {
+            printf("No valid sudoku exists with the specified number of clues");
+        }
 
         //clean up data structures
         sudoku_delete(puzzle);

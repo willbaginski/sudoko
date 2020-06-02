@@ -11,6 +11,7 @@
 #include <time.h>
 
 #include "sudokustruct.h"
+#include "intpair.h"
 
 /* sudoku data structure */
 typedef struct sudoku {
@@ -176,15 +177,28 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 /* removes slots in the puzzle */
 bool remove_squares(sudoku_t *sudoku, int remove) {
 	// determine the number of slots left to empty
-	int empty=0;
-	for (int r=0; r<9; r++) {
-		for (int c=0; c<9; c++) {
-			if (sudoku->puzzle[r][c] == 0) {
+	int empty = 0;
+	for (int row = 0; row < 9; row++) {
+		for (int col = 0; col < 9; col++) {
+			if (sudoku->puzzle[row][col] == 0) {
 				empty++;
 			}
 		}
 	}
 	
+	// allocate an array with an entry for every filled square
+	intpair_t **options = calloc(81 - empty, sizeof(intpair_t *));
+	// fill the array with an intpair containing the position of every nonzero/filled spot
+	int filled = 0;
+	for (int row = 0; row < 9; row++) {
+		for (int col = 0; col < 9; col++) {
+			if (sudoku->puzzle[row][col] != 0) {
+				options[filled] = new_intpair(row, col);
+				filled++;
+			}
+		}
+	}
+
 	// base cases
 	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
 		return false;
@@ -192,13 +206,11 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 		return true;
 	}
 
-	// take a random nonzero square, save its value, and remove it
-	int row = rand() % 9;
-	int col = rand() % 9;
-	while (sudoku->puzzle[row][col] == 0) {
-		row = rand() % 9;
-		col = rand() % 9;
-	}
+	// take a random spot from options, save its value, and remove it
+	int original_index = rand() % filled;
+	int index = original_index;
+	int row = intpair_getRow(options[index]);
+	int col = intpair_getCol(options[index]);
 	int value = sudoku->puzzle[row][col];
 	sudoku->puzzle[row][col] = 0;
 
@@ -206,17 +218,36 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	while (! remove_squares(sudoku, remove)) {
 		// retry removing a new square
 		sudoku->puzzle[row][col] = value;  // restore old value
-		// grab a new nonzero square
-		int row = rand() % 9;
-		int col = rand() % 9;
-		while (sudoku->puzzle[row][col] != 0) {
-			row = rand() % 9;
-			col = rand() % 9;
+		// grab the next nonzero square from options
+		if (index == filled - 1) {  // wrap back to the start of the array
+			index = 0;
+		} else {
+			index++;
 		}
+		
+		// check if we have tried every spot
+		if (index == original_index) {
+			for (int i = 0; i < filled; i++) {
+				intpair_delete(options[i]);
+			}
+			free(options);
+			return false;
+		}
+
+		// take the next row and col
+		row = intpair_getRow(options[index]);
+		col = intpair_getCol(options[index]);
+		// save the value there
 		value = sudoku->puzzle[row][col];
+		// empty the square/set the position to zero
 		sudoku->puzzle[row][col] = 0;
 	}
-
+	
+	// clean up and return true
+	for (int i = 0; i < filled; i++) {
+				intpair_delete(options[i]);
+			}
+			free(options);
 	return true;
 }
 
