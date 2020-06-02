@@ -18,7 +18,7 @@ $(LIB): $(OBJS)
 sudokustruct.o: sudokustruct.h
 
 $(PROG): sudokustruct.c
-	$(CC) $(CFLAGS) $(CREATETEST) $^ -o $@
+	$(CC) $(CFLAGS) $(UNITTEST) $^ -o $@
 
 .PHONY: test clean
 
