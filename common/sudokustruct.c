@@ -133,7 +133,7 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 			j++;
 		}
 	}
-	printf("}\n");
+	printf("}\n\n");
 	free(options);
 
 	// randomly select an int from formatted_options and insert it into the slot
@@ -402,7 +402,6 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 
 	// loop through indices, check if each element is found in all options arrays
 	for (int i = 0; i < 9; i++){
-		printf("rowoptions[%d] = %d, coloptions[%d] = %d, squareoptions[%d] = %d\n", i, rowoptions[i], i, coloptions[i], i, squareoptions[i]);
 		if (rowoptions[i] == 1 && coloptions[i] == 1 && squareoptions[i] == 1){
 			
 			// add this element to the overarching options array
@@ -446,11 +445,6 @@ int *check_row(sudoku_t *sudoko, int row){
 			rowcount[num - 1] += 1;
 		}
 	}
-	printf("rowcount:\n{");
-	for (int j = 0; j < 9; j++) {
-		printf(" %d,", rowcount[j]);
-	}
-	printf("}\n\n");
 	// get the options for what int can go in this slot
 	int *options = find_options(rowcount);
 
@@ -564,7 +558,6 @@ int *find_options(int array[]){
 
 	// loop through the passed array
 	for (int i = 0; i < 9; i++){
-		printf("array[%d] = %d, ", i, array[i]);
 		// if any of the indices store 0, add this index to the options array
 		if (array[i] == 0){
 			options[i] = 1;
@@ -572,7 +565,6 @@ int *find_options(int array[]){
 			options[i] = 0;
 		}
 	}
-	printf("left loop\n");
 	return options;
 }
 
