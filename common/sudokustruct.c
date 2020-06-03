@@ -74,7 +74,7 @@ bool sudoku_load(sudoku_t *sudoku) {
 /* takes an empty sudoku and populates it randomly
  * clues is the number of filled squares at the end */
 bool sudoku_build(sudoku_t *sudoku, int clues) {
-	// make sure sudoku is empty
+	// make sure the supplied sudoku is empty
 	if (! check_empty(sudoku)) {
 		return false;
 	}
@@ -82,11 +82,11 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 	// seed the random number generator
 	srand(time(NULL));
 
-	// construct a solved/full grid
+	/* construct a solved/full grid
+	 * starts from the top left corner and moves left to right, then top to bottom */
 	fill_puzzle(sudoku, 0, 0);
 	
-	//printf("\nSudoku with %d filled-in slots and %d empty slots:\n", clues, 81-clues);
-	// remove spaces
+	// remove spaces to turn the full grid into a puzzle
 	remove_squares(sudoku, 81 - clues);
 
 	
@@ -114,7 +114,7 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 			valid++;
 		}
 	}
-	// if valid is 0, there are no valid options for this slot and we need to backtrack!
+	// if valid is 0, there are no valid options for this square and we need to backtrack!
 	if (valid == 0) {
 		free(options);
 		return false;
@@ -135,14 +135,14 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 	}
 	free(options);
 
-	// randomly select an int from formatted_options and insert it into the slot
+	// randomly select an int from formatted_options and insert it into the square
 	int original_num = rand() % j;
 	int num = original_num;
 	sudoku->puzzle[row][col] = formatted_options[num];
 	
 	/* grab the row and col to move to the next spot (moving left to right, then top to bottom)
 	 * (save them as new values instead of incrementing the current ones because the old values are
-	 * still needed in order to retry fill_puzzle with a different value in the current slot) */
+	 * still needed in order to retry fill_puzzle with a different value in the current square) */
 	int next_row, next_col;
 	if (col == 8) {
 		next_col = 0;
@@ -175,9 +175,12 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 	return true;
 }
 
-/* removes slots in the puzzle */
+/* turns a full grid into a valid puzzle with the specified number of squares removed
+ * uses backtracking to find a puzzle with a unique solution
+ * the boolean returned is leveraged for use in recursion, and the original call will
+ * return true upon the successfu creation of a puzzle */
 bool remove_squares(sudoku_t *sudoku, int remove) {
-	// determine the number of slots left to empty
+	// determine the number of squares left to empty
 	int removed = 0;
 	for (int row = 0; row < 9; row++) {
 		for (int col = 0; col < 9; col++) {
@@ -194,7 +197,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 		return true;
 	}
 
-	// allocate an array with an entry for every filled square
+	// allocate an array with space for an intpair * for every filled square
 	intpair_t **options = calloc(81 - removed, sizeof(intpair_t *));
 	// fill the array with an intpair containing the position of every nonzero/filled spot
 	int filled = 0;
@@ -207,9 +210,9 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 		}
 	}
 
-	// take a random spot from options, save its value, and remove it
+	// take a random square from options, save its value, and remove it
 	int original_index = rand() % filled;
-	int index = original_index;
+	int index = original_index;  // note the starting index so that later we can tell if we have tried every square
 	int row = intpair_getRow(options[index]);
 	int col = intpair_getCol(options[index]);
 	int value = sudoku->puzzle[row][col];
@@ -262,7 +265,7 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 	//go through the entire board
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
-			//check if sudoko space is empty
+			//check if sudoko square is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//loop through all possible values
 				// find valid entries for the spot [row][col]
@@ -274,7 +277,7 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 						valid++;
 					}
 				}
-				// if valid is 0, there are no valid options for this slot and we need to backtrack!
+				// if valid is 0, there are no valid options for this square and we need to backtrack!
 				if (valid == 0) {
 					free(options);
 					return false;
@@ -325,7 +328,7 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 	//go through the entire board
     for(int row = 0; row < 9; row++){
         for(int col = 0; col < 9; col++){
-			//check if sudoko space is empty
+			//check if sudoko square is empty
 			if(sudoku->puzzle[row][col] == 0){
 				// find valid entries for the spot [row][col]
 				int *options = get_options(sudoku, row, col);
@@ -336,7 +339,7 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 						valid++;
 					}
 				}
-				// if valid is 0, there are no valid options for this slot and we need to backtrack!
+				// if valid is 0, there are no valid options for this square and we need to backtrack!
 				if (valid == 0) {
 					free(options);
 					return false;
@@ -508,8 +511,12 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	return true;
 }
 
-/* get_options method */
-// returns which ints (if any) can go into a given spot
+/* get_options method
+ * returns an array of ints indicating which numbers are valid entries for a specified square
+ * array returned by get_options is dynamically allocated and needs to be freed by the user
+ * 1 means that a number is valid, 0 means that it is not
+ * example array if 1, 3, 6, 8 and 9 are valid options and 2, 4, 5, and 7 are not:
+ * { 1, 0, 1, 0, 0, 1, 0, 1, 1, } */
 int *get_options(sudoku_t *sudoku, int row, int col){
 
 	// check that the board is not null
@@ -539,11 +546,12 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 		}
 	}
 
-	// NOTE: THE INDICES IN THE OPTIONS ARRAY CORRESPOND TO AVAILABLE NUMBERS
-	// BUT ARE OFFSET BY 1 (SO INDEX 0 CORRESPONDS TO 1, ETC)
+	// cleanup
 	free(rowoptions);
 	free(coloptions);
 	free(squareoptions);
+	/* NOTE: THE INDICES IN THE RETURNED OPTIONS ARRAY CORRESPOND TO AVAILABLE
+	 * NUMBERS BUT ARE OFFSET BY 1 (SO INDEX 0 CORRESPONDS TO 1, ETC) */
 	return options;
 }
 
@@ -573,7 +581,7 @@ int *check_row(sudoku_t *sudoko, int row){
 			rowcount[num - 1] += 1;
 		}
 	}
-	// get the options for what int can go in this slot
+	// get the options for what int can go in this square
 	int *options = find_options(rowcount);
 
 	// return the options array if no collisions found
@@ -608,7 +616,7 @@ int *check_col(sudoku_t *sudoko, int col){
 		}
 	}
 	
-	// get the options for what int can go in this slot
+	// get the options for what int can go in this square
 	int *options = find_options(colcount);
 
 	// return the options array if no collisions found
@@ -651,7 +659,7 @@ int *check_box(sudoku_t *sudoku, int row, int col){
 	for (int x = rowcorner; x < rowcorner + 3; x++){
 		for (int y = colcorner; y < colcorner + 3; y++){
 
-			// get the number at the current slot
+			// get the number at the current square
 			int num = sudoku->puzzle[x][y];
 
 			//printf("checking row: %d col: %d, num is %d\n", x, y, num);
@@ -672,7 +680,7 @@ int *check_box(sudoku_t *sudoku, int row, int col){
 		}
 	}
 
-	// get the options for what int can go in this slot
+	// get the options for what int can go in this square
 	int *options = find_options(squarecount);
 	// return the options array if no collisions found
 	return options;
