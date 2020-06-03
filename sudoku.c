@@ -20,33 +20,34 @@ int main(int argc, char *argv[]) {
     }
     if(strcmp(argv[1], "create") == 0){ //then enter create mode
         //parse argv[2] here to get dificulty 
+        if(argc != 3){
+            fprintf(stderr, "Error: please provide gameDificulty");
+            return 3;
+        }
 
         sudoku_t* puzzle = new_sudoku();
 
         if(strcmp(argv[2], "easy") == 0) {
-            if (sudoku_build(puzzle, 35)) {
+            if (sudoku_build(puzzle, 45)) {
                 sudoku_print(puzzle);
             } else {
                 printf("No valid sudoku exists with the specified number of clues");
             }
         } else if(strcmp(argv[2], "medium") == 0) {
-            if (sudoku_build(puzzle, 32)) {
+            if (sudoku_build(puzzle, 40)) {
                 sudoku_print(puzzle);
             } else {
                 printf("No valid sudoku exists with the specified number of clues");
             }
             
         } else if(strcmp(argv[2], "hard") == 0) {
-            if (sudoku_build(puzzle, 29)) {
+            if (sudoku_build(puzzle, 35)) {
                 sudoku_print(puzzle);
             } else {
                 printf("No valid sudoku exists with the specified number of clues");
             }
             
-        } else {
-            fprintf(stderr, "usage: ./sudoku gameOption [dificulty]\n");
-            return 1;
-        }
+        } 
 
 
 
