@@ -13,6 +13,10 @@ sudoku_t *new_sudoku();
 
 bool sudoku_load(sudoku_t *sudoku);
 
+/* builds a sudoku puzzle with spaces removed
+ * takes a sudoku struct with an empty puzzle and fills it entirely so that it resembles a solved puzzle
+ * then removes spaces while making sure that the partially-empty puzzle only have one solution (and is a valid sudoku)
+ * from a total of 81 spaces, leaves *clues* spaces filled and 81 - *clues* spaces empty */
 bool sudoku_build(sudoku_t *sudoku, int clues);
 
 int sudoku_solve(sudoku_t *sudoku, bool print);

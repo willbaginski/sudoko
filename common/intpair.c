@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+// holds two ints
 typedef struct intpair {
     int row;
     int col;
@@ -15,10 +16,10 @@ typedef struct intpair {
 
 intpair_t *new_intpair(int row, int col) {
     intpair_t *intpair = calloc(2, sizeof(int));
-    if (intpair == NULL) {
+    if (intpair == NULL) {  // make sure allocation was successful
         fprintf(stderr, "Error: cannot allocate space for intpair. \n");
         return NULL;
-    } else {
+    } else {  // assign the variables and return the intpair
         intpair->row = row;
         intpair->col = col;
         return intpair;
