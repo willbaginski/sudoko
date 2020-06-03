@@ -46,7 +46,7 @@ void copy_puzzle(sudoku_t *dest, sudoku_t *source);
 bool fill_puzzle(sudoku_t *sudoku, int row, int col);
 bool remove_squares(sudoku_t *sudoku, int remove);
 
-/* Takes in from stdin, loads into the suduko data structure */
+/* Takes in from stdin, loads into the sudoku data structure */
 bool sudoku_load(sudoku_t *sudoku) {
 	// loop through all the numbers in the board
 	for(int row = 0; row < 9; row++){
