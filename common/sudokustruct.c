@@ -84,9 +84,8 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 
 	// construct a solved/full grid
 	fill_puzzle(sudoku, 0, 0);
-	printf("Valid full grid:\n");
-	sudoku_print(sudoku);
-	printf("\nSame grid with %d empty spaces:\n", 81-clues);
+	
+	printf("\nSudoku with %d filled-in slots and %d empty slots:\n", clues, 81-clues);
 	// remove spaces
 	remove_squares(sudoku, 81 - clues);
 
