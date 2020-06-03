@@ -1,7 +1,5 @@
 # Makefile for Sudoku Puzzle
 
-PROG = sudoku
-
 C = common
 
 CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$C 
@@ -11,7 +9,9 @@ MAKE = make
 
 LLIBS = $C/common.a 
 
-$(PROG): $(PROG).o $(LLIBS) 
+all: common fuzztesting sudoku
+
+sudoku: sudoku.o $(LLIBS) 
 	$(CC) $(CFLAGS) $^ -o $@
 
 common:
@@ -23,10 +23,6 @@ fuzztesting: fuzztesting.o $(LLIBS)
 fuzztesting.o: fuzztesting.c
 
 .PHONY: all clean
-
-all: common fuzztesting sudoku
-	 
-
 	
 # test: all $(PROG)
 # 	./$(PROG)
