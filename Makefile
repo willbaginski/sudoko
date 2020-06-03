@@ -20,13 +20,12 @@ $(PROG): $(OBJS) $(LLIBS)
 $(LLIBS):
 	$(MAKE) -C common
 
-all: $(LLIBS) fuzztesting $(PROG) 
-
-
 fuzztesting: fuzztesting.o $(LLIBS)
 	$(CC) -Wall -pedantic -std=gnu -ggdb $(FLAGS) $^ -o fuzztesting
 
 fuzztesting.o: fuzztesting.c
+
+all: $(LLIBS) fuzztesting $(PROG) 
 
 .PHONY: all clean
 	
