@@ -115,6 +115,7 @@ bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
 	}
 	// if valid is 0, there are no valid options for this slot and we need to backtrack!
 	if (valid == 0) {
+		free(options);
 		return false;
 	}
 
@@ -415,12 +416,28 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	}
 
 	// call check_row, col, and square
-	if (check_row(sudoku, row) == NULL || check_col(sudoku, column) == NULL || check_square(sudoku, row, column) == NULL){
-		
+	int *rowoptions = check_row(sudoku, row);
+	int *coloptions = check_col(sudoku, column);
+	int *squareoptions = check_square(sudoku, row, column);
+	if (rowoptions == NULL || coloptions == NULL || squareoptions == NULL){
+		// clean up
+		if (rowoptions != NULL) {
+			free(rowoptions);
+		}
+		if (coloptions != NULL) {
+			free(coloptions);
+		}
+		if (squareoptions != NULL) {
+			free(squareoptions);
+		}
+
 		// return false if any of them failed
 		return false;
 	}
-
+	// clean up
+	free(rowoptions);
+	free(coloptions);
+	free(squareoptions);
 	// return true
 	return true;
 }
