@@ -321,12 +321,15 @@ int sudoku_solve(sudoku_t* sudoku){
 	copy_puzzle(one, sudoku);	
 	copy_puzzle(two, sudoku);
 
-	//solve boht puzzle copies forward and backwards
+	//solve both puzzle copies forward and backwards
 	if(!sudoku_solve_forwards(one) || !sudoku_solve_backwards(two)){	//unable to solve board
 		sudoku_delete(one);
 		sudoku_delete(two);
 		return 0;
 	}
+
+	//copy solved board over to inital struct
+	copy_puzzle(sudoku, one);
 	
 	#ifdef GAUNTLET
 	sudoku_print(one);
