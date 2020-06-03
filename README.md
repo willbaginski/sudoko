@@ -39,6 +39,17 @@ The following helper methods are used from common.a:
 
 No assumptions beyond those that are clear from the spec. The solver will even work with invalid sudoku puzzles and produce a 'no solutions' message.
 
+`sudoku.c` only allows the user to choose a preset difficulty options where easy, medium, and hard correspond to 45, 40, and 35 clues.
+The code used to build puzzles, however, supports the creation of sudokus with as few as 26 clues without error (or extremely rare error).
+
+25 clues is generally supported as well, but the creation process occasioanlly (estimated ~15% of the time) fails.
+It is believed that such failures are caused by stack overflows.
+
+24 clue puzzles are possible to generate but not consistently.
+
+Limited testing was performed on puzzles with fewer than 24 clues, but valid solutions at that level are rare.
+It is unlikely that such puzzles can be consistenly generated
+
 
 ### Compilation
 
