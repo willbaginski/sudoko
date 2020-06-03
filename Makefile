@@ -1,5 +1,10 @@
 # Makefile for Sudoku Puzzle
 
+# object files, and the target library
+OBJS = sudoku.o
+PROG = sudoku
+LLIBS = $C/common.a 
+
 C = common
 
 CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$C 
@@ -9,23 +14,22 @@ MAKE = make
 
 LLIBS = $C/common.a 
 
-all: common fuzztesting sudoku
-
-sudoku: sudoku.o $(LLIBS) 
+$(PROG): $(OBJS) $(LLIBS) 
 	$(CC) $(CFLAGS) $^ -o $@
 
-common:
+$(LLIBS):
 	$(MAKE) -C common
 
+all: $(LLIBS) fuzztesting $(PROG) 
+
+
 fuzztesting: fuzztesting.o $(LLIBS)
-	$(CC) -Wall -pedantic -std=gnu -ggdb $(FLAGS) -I$L -I$C $^ -o fuzztesting
+	$(CC) -Wall -pedantic -std=gnu -ggdb $(FLAGS) $^ -o fuzztesting
 
 fuzztesting.o: fuzztesting.c
 
 .PHONY: all clean
 	
-# test: all $(PROG)
-# 	./$(PROG)
 test: all $(PROG)
 	bash -v ./testing.sh
 
