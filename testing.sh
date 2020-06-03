@@ -1,3 +1,4 @@
+#!/bin/bash
 # Test script for the sudoku puzzle
 # Authors: Antony 1, Spring 2020
 
@@ -11,4 +12,5 @@
 
 ##### Test for good input to sudoku.c #########
 
-./sudoku solve < ./sudoku create
+# ./sudoku solve < ./sudoku create
+#./sudoku solve < test1.txt

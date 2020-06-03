@@ -45,7 +45,7 @@ int main(const int argc, char *argv[])
     sudoku_build(puzzle, 41);
 
     //solve the puzzle and print the appropriate output
-    sudoku_solve(puzzle);
+    sudoku_solve(puzzle, false);
     printf("Solution to the sudoku:\n");
     sudoku_print(puzzle);
     sudoku_delete(puzzle);
