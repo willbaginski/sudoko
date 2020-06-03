@@ -35,7 +35,7 @@ sudoku_t* new_sudoku(){
 /* sudoku_validate helper functions */
 int *check_row(sudoku_t *sudoku, int row);
 int *check_col(sudoku_t *sudoku, int col);
-int *check_square(sudoku_t *sudoku, int row, int col);
+int *check_box(sudoku_t *sudoku, int row, int col);
 int *find_options(int array[]);
 
 /* other helper functions */
@@ -99,12 +99,13 @@ bool sudoku_build(sudoku_t *sudoku, int clues) {
 /* fills an empty sudoku puzzle randomly with a valid full grid
  * helper for sudoku_build */
 bool fill_puzzle(sudoku_t *sudoku, int row, int col) {
+	
 	// if puzzle is full, return true (base case)
 	if (check_full(sudoku)) {
 		return true;
 	}
 	
-	// find valid entries for the spot [row][col]
+	// find valid entries for the sqquare [row][col]
 	int *options = get_options(sudoku, row, col);
 	// determine the number of valid options
 	int valid = 0;
@@ -483,7 +484,7 @@ bool sudoku_validate(sudoku_t *sudoku, int row, int column){
 	// call check_row, col, and square
 	int *rowoptions = check_row(sudoku, row);
 	int *coloptions = check_col(sudoku, column);
-	int *squareoptions = check_square(sudoku, row, column);
+	int *squareoptions = check_box(sudoku, row, column);
 	if (rowoptions == NULL || coloptions == NULL || squareoptions == NULL){
 		// clean up
 		if (rowoptions != NULL) {
@@ -522,7 +523,7 @@ int *get_options(sudoku_t *sudoku, int row, int col){
 	// call check row, col, and square
 	int *rowoptions = check_row(sudoku, row);
 	int *coloptions = check_col(sudoku, col);
-	int *squareoptions = check_square(sudoku, row, col);
+	int *squareoptions = check_box(sudoku, row, col);
 	
 	// initialize an array for options
 	int *options = malloc(sizeof(int) * 9);
@@ -614,8 +615,8 @@ int *check_col(sudoku_t *sudoko, int col){
 	return options;
 }
 
-/*	check_square helper method	*/
-int *check_square(sudoku_t *sudoku, int row, int col){
+/*	check_box helper method	*/
+int *check_box(sudoku_t *sudoku, int row, int col){
 
 	// variables for the row and column bottom left corner
 	int rowcorner;
