@@ -330,7 +330,6 @@ int sudoku_solve(sudoku_t* sudoku, bool print){
 
 	//print the answer
 	if(print){
-		printf("here answer\n");
 		sudoku_print(two);
 	}
 	
