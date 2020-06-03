@@ -46,20 +46,20 @@ Pseudocode:
 
         check if the puzzle is full
             if so, return true (base case)
-        call get_options on the current row, col in order to find valid entries for the current spot
+        call ```get_options``` on the current row, col in order to find valid entries for the current spot
         determine the number of valid options returned
         if no valid options returned
             free the options array
             return false (we need to backtrack)
-        turn the array from get_options into a form which can be more easily iterated
+        turn the array from ```get_options``` into a form which can be more easily iterated over
         randomly select an int from the formatted options array and insert it into the current slot in the sudoku board
         get the row and column number for the next slot in the sudoku board
-        call fill_puzzle recursively on the next row and col number
-        while fill_puzzle returns false
+        call ```fill_puzzle``` recursively on the next row and column number
+        while ```fill_puzzle``` returns false
             move on to the next index in the formatted options array
             replace the current value in the puzzle with the next one
             if no more options
-                set the current slot to 0
+                set the current square to 0
                 free allocated space
                 return false
         free allocated space
@@ -72,25 +72,27 @@ Purpose: remove a certain number of slots from a full puzzle randomly so that th
 Pseudocode:
 
         loop through the sudoku board and check how many slots are empty
-        if sudoku_solve on the current board does not return 1 (base case)
+        
+        if ```sudoku_solve``` on the current board does not return 1 (base case #1)
             return false
-        otherwise if we've reached our removed quota (base case)
+        otherwise if the amount of empty spaces is equal to the amount of desired empty spaces (base case #2)
             return true
-        allocate space for an array with an entry for every filled square
-        fill the array with an intpair containing the position of every nonzero/filled slot
-        take a random spot from options
-        save the spot's value
-        remove it from the board
-        while sudoku_solve doesn't return 1 or remove_squares returns false
-            restore the old value to the current sudoku slot
-            get the next nonzero slot from options
-            check if we have already tried and failed to find a unique solution for every spot
-                delete options
+        
+        allocate space for an array ```options``` with one ```intpair *``` entry for every nonzero/filled square
+        fill the array with an ```intpair``` containing the position of every nonzero/filled square
+        take a random spot from ```options```
+        save the row and column index of the square as well as its value
+        remove the square from the board (zero it)
+        while ```sudoku_solve``` on the updated board does not return 1, or ```remove_squares``` on the updated board turns false
+            restore the value of the square
+            get the next nonzero square from options
+            check if we have already tried and failed to find a unique solution for every square in ```options```
+                delete every ```intpair``` in ```options``` and delete ```options```
                 return false
-            get the next row and col from options
-            save the value there
-            empty this slot in the sudoku puzzle
-        delete all intpairs
+            get the next square from ```options```
+            save their associated row, column, and value
+            remove this square in the sudoku puzzle
+        delete every ```intpair``` in ```options``` and delete ```options```
         return true
 
 ### sudokustruct.c sudoku_solve_forwards method
@@ -309,4 +311,11 @@ Pseudocode:
 
 sudoku:
 
-        Defined in sudokustruct.c in the common directory. Is a 2 dimensional array where each array contains 9 slots (for a 9x9 sudoku board).
+Defined in the sudokustruct module in the common directory. Is a two dimensional array where each array contains 9 slots (for a 9x9 sudoku board).
+
+intpair:
+
+Defined in the intpair module in the common directory. Contains two ints, ```row``` and ```col```.
+It is leveraged in the suduoku module so that a one dimensional array of unrelated positions on the board can be kept
+
+   
