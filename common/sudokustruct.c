@@ -263,9 +263,34 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
 				//loop through all possible values
-				for(int val = 1; val < 10; val++){
+				// find valid entries for the spot [row][col]
+				int *options = get_options(sudoku, row, col);
+				// determine the number of valid options
+				int valid = 0;
+				for (int i = 0; i < 9; i++) {
+					if (options[i] == 1) {
+						valid++;
+					}
+				}
+				// if valid is 0, there are no valid options for this slot and we need to backtrack!
+				if (valid == 0) {
+					return false;
+				}
+
+				int *formatted_options = calloc(valid, sizeof(valid));
+				// add each valid number into the array
+				int j = 0;
+				for (int i = 0; i < 9; i++) {
+					if (options[i] == 1) {
+						formatted_options[j] = i + 1;
+						j++;
+					}
+				}
+
+				//now try to solve sudoku
+				for(int val = 0; val < valid; val++){
 					//try placing a value
-					sudoku->puzzle[row][col] = val;
+					sudoku->puzzle[row][col] = formatted_options[val];
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
 						if(sudoku_solve_forwards(sudoku)){
@@ -273,6 +298,10 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 						}
 					}
 				}
+				//clean up arrays
+				free(options);
+				free(formatted_options);
+
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
 				return false;
 			}
@@ -292,10 +321,34 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
         for(int col = 0; col < 9; col++){
 			//check if sudoko space is empty
 			if(sudoku->puzzle[row][col] == 0){
-				//loop through all possible values
-				for(int val = 9; val > 0; val--){
+				// find valid entries for the spot [row][col]
+				int *options = get_options(sudoku, row, col);
+				// determine the number of valid options
+				int valid = 0;
+				for (int i = 0; i < 9; i++) {
+					if (options[i] == 1) {
+						valid++;
+					}
+				}
+				// if valid is 0, there are no valid options for this slot and we need to backtrack!
+				if (valid == 0) {
+					return false;
+				}
+
+				int *formatted_options = calloc(valid, sizeof(valid));
+				// add each valid number into the array
+				int j = 0;
+				for (int i = 0; i < 9; i++) {
+					if (options[i] == 1) {
+						formatted_options[j] = i + 1;
+						j++;
+					}
+				}
+
+				//now try to solve sudoku
+				for(int val = valid-1; val >= 0; val--){
 					//try placing a values
-					sudoku->puzzle[row][col] = val;
+					sudoku->puzzle[row][col] = formatted_options[val];
 					if(sudoku_validate(sudoku, row, col) == true){	//valid place
 						//recursive call
 						if(sudoku_solve_backwards(sudoku)){
@@ -304,6 +357,10 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 					}
 					
 				}
+				//clean up arrays
+				free(options);
+				free(formatted_options);
+
 				sudoku->puzzle[row][col] = 0; //means couldn't find a number to place
 				return false;
 			}
