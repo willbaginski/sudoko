@@ -296,7 +296,6 @@ bool sudoku_solve_forwards(sudoku_t *sudoku) {
 					//try placing a value
 					sudoku->puzzle[row][col] = formatted_options[val];
 					//clean up arrays
-					free(formatted_options);
 					if(sudoku_validate(sudoku, row, col)){	//valid place
 						//recursive call
 						if(sudoku_solve_forwards(sudoku)){
