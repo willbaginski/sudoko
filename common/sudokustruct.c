@@ -187,7 +187,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	}
 	
 	// base cases
-	if (sudoku_solve(sudoku) != 1) {  // backtrack if sudoku doesn't have a unique solution
+	if (sudoku_solve(sudoku, false) != 1) {  // backtrack if sudoku doesn't have a unique solution
 		return false;
 	} else if (removed == remove) {  // if we get here, we're finished
 		return true;
@@ -215,7 +215,7 @@ bool remove_squares(sudoku_t *sudoku, int remove) {
 	sudoku->puzzle[row][col] = 0;
 
 	// recursive case ... if what we inserted invalidates the puzzle, try different options until we have a unique solution again
-	while (sudoku_solve(sudoku) != 1 || ! remove_squares(sudoku, remove)) {
+	while (sudoku_solve(sudoku, false) != 1 || ! remove_squares(sudoku, remove)) {
 		// restore the old value (removing it caused an issue!)
 		sudoku->puzzle[row][col] = value;
 
@@ -314,7 +314,7 @@ bool sudoku_solve_backwards(sudoku_t *sudoku) {
 }
 
 /* solve overall */
-int sudoku_solve(sudoku_t* sudoku){
+int sudoku_solve(sudoku_t* sudoku, bool print){
 	sudoku_t* one = new_sudoku();
 	sudoku_t* two = new_sudoku();
 
@@ -328,8 +328,11 @@ int sudoku_solve(sudoku_t* sudoku){
 		return 0;
 	}
 
-	//copy solved board over to inital struct
-	copy_puzzle(sudoku, one);
+	//print the answer
+	if(print){
+		printf("here answer\n");
+		sudoku_print(two);
+	}
 	
 	#ifdef GAUNTLET
 	sudoku_print(one);
@@ -633,7 +636,7 @@ int main() {
 	sudoku_load(puzzle);
 
 
-	int res = sudoku_solve(puzzle);
+	int res = sudoku_solve(puzzle, true);
 	if(res == 0){
 		fprintf(stdout, "No solutions. \n");
 	}

@@ -34,10 +34,9 @@ int main(int argc, char *argv[]) {
     else if(strcmp(argv[1], "solve") == 0){ //then enter solve mode
         sudoku_t* puzzle = new_sudoku();
         sudoku_load(puzzle);
-        int res = sudoku_solve(puzzle);
-        
         printf("Solution to the sudoku:\n");
-        sudoku_print(puzzle);
+        int res = sudoku_solve(puzzle, true);
+    
         if(res == 0){
             fprintf(stdout, "No solutions. \n");
         }

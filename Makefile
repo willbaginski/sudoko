@@ -14,6 +14,9 @@ LLIBS = $C/common.a
 $(PROG): $(PROG).o $(LLIBS) 
 	$(CC) $(CFLAGS) $^ -o $@
 
+common:
+	$(MAKE) -C common
+
 fuzztesting: fuzztesting.o $(LLIBS)
 	$(CC) -Wall -pedantic -std=gnu -ggdb $(FLAGS) -I$L -I$C $^ -o fuzztesting
 
@@ -21,8 +24,8 @@ fuzztesting.o: fuzztesting.c
 
 .PHONY: all clean
 
-all: fuzztesting
-	$(MAKE) -C common
+all: common fuzztesting sudoku
+	 
 
 	
 # test: all $(PROG)
