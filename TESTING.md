@@ -3,49 +3,25 @@
 ### Antony 1, CS50, May 2020
 
 ## Testing Process
-First, I tried various erroneous queries then I tried valid queries. 
+For the `testing.sh`:
+First, we tried various erroneous input lines to check our input validation.
+Then, we testing the solver on premade sudoku puzzles.
+Then, we tested create on *easy*, *medium*, and *hard* mode.
+Finally, we testing the create and solve in unison on *easy*, *medium*, and *hard* mode.
+We also included a memory leak check on a create and solve command.
+
+For macros testing, we used the following flags:
+For `UNITTEST`:
+
+For `CREATETEST`:
+
+
+* Note: We understand these puzzle do not look randomly generated. This is because our seed relies on time. If you run two create commands separately in your terminal, you will get two random puzzles.
 
 ### Testing Improper Input
-1 argument
-`./querier ../tse-output/letters-depth-1`
-
-3 arguments
-`./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1 ../tse-output/letters-index-1`
-
-starting and
-`echo and playground | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-starting or
-`echo or home | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-ending and
-`echo home and | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-ending or
-`echo tse or | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-consecutive 'and' 'or' combinations
-`echo tse or and playground | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-word that doesn't exist
-`echo dog | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-word combination that doesn't exist
-`echo algorithm and tse | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
-bad charecters
-`echo 137 | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
-
 
 ### Testing Valid Input
-tests on letters-index-1
-`cat test1.txt | ./querier ../tse-output/letters-depth-1 ../tse-output/letters-index-1`
 
-tests on letters-index-4
-`cat test2.txt | ./querier ../tse-output/letters-depth-4 ../tse-output/letters-index-4`
-
-tests on wikipedia-index-1
-`cat test3.txt | ./querier ../tse-output/wikipedia-depth-1 ../tse-output/wikipedia-index-1`
 
 ### Testing with FuzzQuery
-In order to test with fuzzquery, run `make fuzz` in the command line.
+In order to test with fuzztesting, run `make fuzz` in the command line.

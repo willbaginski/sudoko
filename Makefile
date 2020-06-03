@@ -37,9 +37,13 @@ valgrind:
 	#valgrind --leak-check=full --show-leak-kinds=all ./sudoku create easy
 	valgrind --leak-check=full --show-leak-kinds=all ./sudoku solve < ./common/test1.txt
 
+fuzz:
+	./fuzztesting 1
+
 clean:
 	rm -f core
 	rm -f sudoku
+	rm -f fuzztesting
 	rm -f *~ *.o
 	rm -rf *.dSYM
 	rm -f TAGS
