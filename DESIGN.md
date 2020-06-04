@@ -60,5 +60,8 @@ Index 0 refers to the top-left square, and squares are counted left to right, to
 
 ## Testing plan  ##
 **create:**
-
+Using macros
 **solve:**
+Using macros
+**Overall**
+testing.sh
