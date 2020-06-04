@@ -7,7 +7,9 @@ The `sudoku` is a standalone program that has two modes: *create* and *solve*.
 In the *create* mode, the program takes in a second parameter: 'easy', 'medium', or 'hard', and produces a puzzle through stdout with the appropriate difficulty.
 In *solve* mode, the program reads and loads and puzzle then solves using backtracing.
 
-This is our graphical interpretation of sudoko [website] (http://home.cs.dartmouth.edu/~olee/) and this is the [repo] (https://github.com/oleedart/sudoku-web). 
+This is our graphical interpretation of sudoko website (http://home.cs.dartmouth.edu/~olee/) and this is the repo (https://github.com/oleedart/sudoku-web). 
+
+This is our video (https://drive.google.com/file/d/1YD-zTyPQ5ZFBVnowKlGvWUKhVh5F8n5d/view?usp=sharing).
 ### Usage
 
 To use the sudoku, execute from a command line with usage syntax:
